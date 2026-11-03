@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Climático de Destinos - IIARRD</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --azul: #003366; --rojo: #d32f2f; --naranja: #f6ad55; --celeste: #3182ce; 
+            --polar: #1a365d; --verde-flood: #0d9488; --amarillo: #f1c40f; --verde: #27ae60;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 10px; color: #333; }
+        .main-card { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .search-row { display: flex; gap: 10px; margin-bottom: 25px; }
+        input { flex: 1; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; }
+        button#btnBuscar { padding: 15px 25px; background: var(--azul); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #displayArea { display: none; }
+        
+        .alerta-viva { padding: 15px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; border-left: 10px solid; display: none; animation: flash 2s infinite; }
+        @keyframes flash { 0% {opacity: 1;} 50% {opacity: 0.8;} 100% {opacity: 1;} }
+        .aviso-oficial { background: #fee2e2; border-color: #f87171; color: #991b1b; border-left-color: var(--rojo); }
+        .aviso-evento { background: #fff7ed; border-color: #fb923c; color: #9a3412; border-left-color: #ea580c; border-top: 1px solid #fb923c; }
+        .aviso-calor { background: #fff3cd; border-color: #f6ad55; color: #856404; border-left-color: var(--naranja); }
+        .aviso-polar { background: #e0f2fe; border-color: #7dd3fc; color: #003366; border-left-color: var(--azul); }
+
+        .incendio-index-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .index-bar-bg { background: #e2e8f0; height: 12px; border-radius: 6px; margin: 10px 0; overflow: hidden; }
+        #indexBarFill { background: var(--verde); width: 0%; height: 100%; transition: width 1s ease-in-out, background-color 0.5s; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .clima-card { background: var(--azul); color: white; padding: 25px; border-radius: 12px; text-align: center; }
+        .tactico-hoy { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 12.5px; text-align: left; border-top: 1px solid rgba(255,255,255,0.2); }
+
+        .item-riesgo { padding: 15px; border-radius: 8px; border-left: 6px solid #ccc; background: #f8f9fa; font-size: 13px; line-height: 1.4; margin-bottom: 10px; }
+        .item-riesgo ul { margin: 5px 0 0 15px; padding: 0; list-style: disc; }
+
+        .leyenda-container { background: #f0f7ff; border-left: 5px solid var(--azul); padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; line-height: 1.5; }
+        .kit-box { background: #f1f5f9; border: 1px dashed var(--azul); padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .kit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-top: 8px; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 15px; }
+        .btn-servicio { display: block; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; }
+        .btn-hospital { background: #dc3545; }
+        .btn-meteo { background: #2b6cb0; }
+        .btn-ercc { background: #004080; } 
+        .btn-flood { background: var(--verde-flood); }
+
+        .emergencia-box { margin-top: 20px; padding: 20px; background: #2d3748; color: white; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .tel-num { font-size: 24px; font-weight: bold; color: #63b3ed; }
+        .chart-wrap { height: 350px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h2 style="color: var(--azul); margin-top: 0;">Monitor climático de destinos</h2>
+    <div class="search-row">
+        <input type="text" id="ciudadIn" placeholder="Escribir Ciudad y Pais">
+        <button id="btnBuscar" onclick="analizar()">ANALIZAR</button>
+    </div>
+
+    <div id="displayArea">
+        <div id="alertOficial" class="alerta-viva aviso-oficial">AVISO OFICIAL: Tiempo severo detectado. Se recomienda consultar las recomendaciones oficiales de los organismos locales.</div>
+        <div id="alertEvento" class="alerta-viva aviso-evento">AVISO DE CRISIS (48hs): <span id="txtEvento"></span>. Se recomienda consultar las fuentes locales de información para confirmar una segura accesibilidad en rutas y caminos.</div>
+        <div id="alertCalor" class="alerta-viva aviso-calor">ALERTA OLA DE CALOR: Riesgo térmico elevado.</div>
+        <div id="alertPolar" class="alerta-viva aviso-polar">ALERTA OLA POLAR: Temperaturas críticas de frío.</div>
+
+        <div class="incendio-index-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: var(--azul);">Indice 30-30-30 (Riesgo de Incendio)</strong>
+                <span id="val3030" style="font-weight: bold;">0%</span>
+            </div>
+            <div class="index-bar-bg"><div id="indexBarFill"></div></div>
+        </div>
+        
+        <h3 id="resNombre" style="color: var(--azul); margin-bottom: 15px;"></h3>
+
+        <div class="dashboard">
+            <div>
+                <div id="cBox" class="clima-card">
+                    <div id="resT" style="font-size: 55px; font-weight: bold;">--C</div>
+                    <div id="resD" style="text-transform: uppercase; font-size: 18px; font-weight: bold;">--</div>
+                    <div style="display: flex; justify-content: space-around; padding: 8px; font-size: 13px; margin-top:10px;">
+                        <div>Hum: <span id="resH">--</span>%</div>
+                        <div>Viento: <span id="resV">--</span> km/h</div>
+                    </div>
+                    <div class="tactico-hoy">
+                        <strong>PRONOSTICO HOY:</strong><br>
+                        <span id="txtTacticoHoy">Analizando resto del dia...</span>
+                    </div>
+                </div>
+                
+                <div class="btn-grid">
+                    <a id="btnHospitales" href="#" target="_blank" class="btn-servicio btn-hospital">&#x1f3e5; CENTROS DE SALUD CERCANOS</a>
+                    <a id="btnMeteoOficial" href="#" target="_blank" class="btn-servicio btn-meteo">&#x1f310; SERVICIO METEOROLÓGICO OFICIAL</a>
+                    <a id="btnERCC" href="https://erccportal.jrc.ec.europa.eu/ECHO-Flash" target="_blank" class="btn-servicio btn-ercc">&#x1f4e2; NOTICIAS DE EVENTOS METEOROLÓGICOS</a>
+                    <a id="btnFloodHub" href="https://g.co/floodhub" target="_blank" class="btn-servicio btn-flood">&#x1f30a; VALIDAR INUNDACIÓN (Flood hub)</a>
+                </div>
+            </div>
+            <div id="panelRiesgos" class="analisis-panel"></div>
+        </div>
+
+        <div class="leyenda-container">
+            <strong>PLANIFICACIÓN 7 DÍAS:</strong>
+            <div id="txtNarrativa" style="margin-top:5px; line-height: 1.6;">Analizando tendencias...</div>
+        </div>
+
+        <div class="kit-box">
+            <strong>&#x1f392; Kit de Emergencia Recomendado (IIARRD):</strong>
+            <div class="kit-grid">
+                <div>&#x1f4a7; Agua (2L por pers.)</div><div>&#x1f526; Linterna y pilas</div><div>&#x1fa79; Botiquín completo</div>
+                <div>&#x1f4fb; Radio AM/FM</div><div>&#x1f50b; Powerbank cargado</div><div>&#x1f4c2; Documentos físicos</div>
+            </div>
+        </div>
+
+        <div class="emergencia-box">
+            <div><strong>Central de Emergencias Locales</strong><br><small id="emergenciaZona"></small></div>
+            <div id="numEmergencia" class="tel-num">--</div>
+        </div>
+
+        <div class="chart-wrap">
+            <h4 style="text-align: center; color: var(--azul); margin-bottom: 5px;">Análisis de Estacionalidad Histórica (Anual)</h4>
+            <canvas id="graficoIIARRD"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let chart = null;
+
+    async function analizar() {
+        const busqueda = document.getElementById('ciudadIn').value;
+        if(!busqueda) return;
+        try {
+            const gRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(busqueda)}`);
+            const gData = await gRes.json();
+            if(!gData.length) return alert("Ubicacion no encontrada");
+            const { lat, lon, display_name } = gData[0];
+            const pais = display_name.split(',').pop().trim();
+            document.getElementById('resNombre').innerText = display_name;
+
+            // LINK HOSPITALES CORREGIDO
+            document.getElementById('btnHospitales').href = `https://www.google.com/maps/search/hospitales/@${lat},${lon},15z`;
+            
+            configurarLinkMeteo(pais);
+            document.getElementById('alertEvento').style.display = 'none';
+
+            const cRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&hourly=precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`);
+            const cData = await cRes.json();
+
+            const hoy = new Date();
+            const hace2d = new Date(hoy.getTime() - (2 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+            const ayer = new Date(hoy.getTime() - (24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+            const hRes = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${hace2d}&end_date=${ayer}&daily=precipitation_sum,weather_code&timezone=auto`);
+            const hData = await hRes.json();
+            
+            const acumuladoReal48 = hData.daily.precipitation_sum.reduce((a, b) => a + b, 0);
+            const eventoSevero = hData.daily.weather_code.some(code => code >= 65);
+            
+            if(acumuladoReal48 > 70 || eventoSevero) {
+                mostrarAlertaEvento(`EVENTO HÍDRICO: ${acumuladoReal48.toFixed(1)}mm de lluvia o tormenta registrados recientemente`);
+            }
+
+            const sRes = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=${lat}&longitude=${lon}&maxradiuskm=400&starttime=${new Date(Date.now() - 48*3600000).toISOString()}&minmagnitude=4.0`);
+            const sData = await sRes.json();
+            if (sData.features.length > 0) mostrarAlertaEvento(`SISMO DETECTADO: M${sData.features[0].properties.mag} detectada recientemente`);
+
+            const histAnualRes = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=2024-01-01&end_date=2024-12-31&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`);
+            const histAnual = await histAnualRes.json();
+
+            procesarVisualizacion(pais, cData, histAnual.daily, acumuladoReal48);
+            document.getElementById('displayArea').style.display = 'block';
+
+        } catch (e) { alert("Error de conexion."); }
+    }
+
+    function mostrarAlertaEvento(texto) {
+        document.getElementById('alertEvento').style.display = "block";
+        document.getElementById('txtEvento').innerText = texto;
+    }
+
+    function configurarLinkMeteo(pais) {
+        const links = { "Argentina": "https://www.smn.gob.ar/", "Chile": "https://www.meteochile.gob.cl/", "España": "https://www.aemet.es/", "United States": "https://www.weather.gov/", "México": "https://smn.conagua.gob.mx/", "Brasil": "https://portal.inmet.gov.br/" };
+        document.getElementById('btnMeteoOficial').href = links[pais] || `https://www.google.com/search?q=servicio+meteorologico+oficial+${encodeURIComponent(pais)}`;
+    }
+
+    function traducir(c) {
+        const map = {0:"Despejado", 1:"Algo Nuboso", 3:"Nublado", 45:"Niebla", 61:"Lluvia", 65:"Lluvia Fuerte", 71:"Nieve", 95:"Tormenta"};
+        return map[c] || "Variable";
+    }
+
+    function procesarVisualizacion(pais, cData, hist, acumulado48) {
+        const cur = cData.current;
+        const t = Math.round(cur.temperature_2m);
+        const h = cur.relative_humidity_2m;
+        const v = Math.round(cur.wind_speed_10m);
+        
+        document.getElementById('resT').innerText = t + "C";
+        document.getElementById('resH').innerText = h;
+        document.getElementById('resV').innerText = v;
+        document.getElementById('resD').innerText = traducir(cur.weather_code);
+
+        document.getElementById('alertOficial').style.display = (cur.weather_code >= 65 || v > 50) ? 'block' : 'none';
+        document.getElementById('alertCalor').style.display = (t >= 35) ? 'block' : 'none';
+        document.getElementById('alertPolar').style.display = (t <= 5) ? 'block' : 'none';
+
+        // 1. Ampliamos el rango a las 24 horas del día actual
+        const rain24h = cData.hourly.precipitation.slice(0, 24).some(p => p > 0.5);
+
+        // 2. Evaluamos si el código de clima actual (cur.weather_code) ya registra lluvias/tormentas
+        const climaActualLluvia = cur.weather_code >= 51; 
+
+        // 3. Modificamos el texto dinámico combinando ambas condiciones
+        document.getElementById('txtTacticoHoy').innerText = (rain24h || climaActualLluvia) 
+            ? 'AVISO: Inestabilidad o lluvias previstas para hoy.' 
+            : 'ESTADO: Condiciones estables para las próximas horas.';
+
+        let puntos = (t >= 30 ? 33.3 : (t/30)*20) + (v >= 30 ? 33.3 : (v/30)*20) + (h <= 30 ? 33.4 : ((100-h)/70)*15);
+        puntos = Math.min(Math.round(puntos), 100);
+        const barFill = document.getElementById('indexBarFill');
+        const valLabel = document.getElementById('val3030');
+        barFill.style.width = puntos + "%";
+        valLabel.innerText = puntos + "%";
+        if(puntos <= 25) { barFill.style.backgroundColor = "#27ae60"; valLabel.style.color = "#27ae60"; }
+        else if(puntos <= 50) { barFill.style.backgroundColor = "#f1c40f"; valLabel.style.color = "#f1c40f"; }
+        else if(puntos <= 75) { barFill.style.backgroundColor = "#e67e22"; valLabel.style.color = "#e67e22"; }
+        else { barFill.style.backgroundColor = "#d32f2f"; valLabel.style.color = "#d32f2f"; }
+
+        const mesesAbrev = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        let mTempMax = Array(12).fill(0), mTempMin = Array(12).fill(0), mLluv = Array(12).fill(0), count = Array(12).fill(0);
+        
+        hist.time.forEach((f, i) => {
+            let m = new Date(f + "T00:00:00").getUTCMonth();
+            mTempMax[m] += hist.temperature_2m_max[i] || 0;
+            mTempMin[m] += hist.temperature_2m_min[i] || 0;
+            mLluv[m] += hist.precipitation_sum[i] || 0;
+            count[m]++;
+        });
+
+        const tMaxMedias = mTempMax.map((v, i) => v/count[i]);
+        const tMinMedias = mTempMin.map((v, i) => v/count[i]);
+        
+        const mMaxCalor = tMaxMedias.indexOf(Math.max(...tMaxMedias));
+        const mMaxLluvia = mLluv.indexOf(Math.max(...mLluv));
+        const mMaxPolar = tMinMedias.indexOf(Math.min(...tMinMedias));
+
+        document.getElementById('panelRiesgos').innerHTML = `
+            <div class="item-riesgo" style="border-left-color: var(--rojo)"><strong>INCENDIOS: Pico en ${mesesAbrev[mMaxCalor]}</strong><ul><li>Evitar quemas de residuos.</li><li>Limpiar perimetros de vegetacion seca.</li></ul></div>
+            <div class="item-riesgo" style="border-left-color: var(--verde-flood)"><strong>LLUVIAS: Maximo en ${mesesAbrev[mMaxLluvia]}</strong><ul><li>Revisar drenajes y canaletas.</li><li>Agua para consumo y mantenerse conectado.</li></ul></div>
+            <div class="item-riesgo" style="border-left-color: var(--naranja)"><strong>OLA CALOR: Riesgo en ${mesesAbrev[mMaxCalor]}</strong><ul><li>Priorizar hidratacion constante.</li><li>Proteger a niños y adultos mayores.</li></ul></div>
+            <div class="item-riesgo" style="border-left-color: var(--celeste)"><strong>OLA POLAR: Pico en ${mesesAbrev[mMaxPolar]}</strong><ul><li>Ventilar ambientes si utiliza estufas.</li><li>Vestir ropa de abrigo por capas.</li></ul></div>
+        `;
+
+        const d = cData.daily;
+        const totalLluviaSemana = d.precipitation_sum.reduce((a,b)=>a+b,0);
+        const tMaxSemana = Math.max(...d.temperature_2m_max);
+        const tMinSemana = Math.min(...d.temperature_2m_min);
+        
+        let plan = `Evolución 7 dias: Acumulado previsto de ${totalLluviaSemana.toFixed(1)}mm. Temperaturas entre ${tMinSemana.toFixed(0)}C y ${tMaxSemana.toFixed(0)}C. `;
+        if(totalLluviaSemana > 25) plan += `Escenario de inestabilidad activa. Se recomienda precaucion en zonas bajas. `;
+        else if(tMaxSemana > 32) plan += `Escenario de calor seco. Riesgo elevado de insolacion. `;
+        else if(tMinSemana < 8) plan += `Ambiente frio predominante. Se recomienda abrigo adecuado. `;
+        else plan += `Condiciones de estabilidad climatica tipicas de la estación. `;
+        if (acumulado48 > 40) plan += `ALERTA: Suelos saturados por eventos previos.`;
+
+        document.getElementById('txtNarrativa').innerText = plan;
+        document.getElementById('numEmergencia').innerText = pais.includes("Argentina") ? "911 / 103" : "911";
+        document.getElementById('emergenciaZona').innerText = pais.includes("Argentina") ? "Defensa Civil / Bomberos" : "Servicios Locales";
+        
+        renderChart(mesesAbrev, tMaxMedias, mLluv);
+    }
+
+    function renderChart(labels, temps, lluvias) {
+        const ctx = document.getElementById('graficoIIARRD').getContext('2d');
+        if(chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: labels, datasets: [
+                { label: 'Lluvia Total (mm)', data: lluvias, backgroundColor: 'rgba(49, 130, 206, 0.4)', yAxisID: 'yL' },
+                { label: 'Temp Max Media (C)', data: temps, type: 'line', borderColor: '#d32f2f', yAxisID: 'yT' }
+            ]},
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    yL: { type: 'linear', position: 'left' },
+                    yT: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

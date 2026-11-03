@@ -1,0 +1,625 @@
+<!-- CONTENEDOR BUSCADOR MONITOR CLIMÁTICO EL NIÑO (NOAA CLIMATE.GOV) -->
+<div id="monitor-el-nino-widget">
+  <div class="men-card">
+    <div class="men-header">
+      <span class="men-badge">Monitor Climático de Destinos</span>
+      <h2>¿Cómo impacta El Niño en tus vacaciones?</h2>
+      <p>Consultá la combinación de temperatura y lluvias según la época del año (Base NOAA Climate.gov).</p>
+    </div>
+
+    <!-- SELECTOR DE ÉPOCA -->
+    <div class="men-season-selector">
+      <label class="men-radio-label">
+        <input type="radio" name="menTemporada" value="DJF" checked>
+        <span>☀️ Diciembre – Febrero <small>(Verano austral / Invierno boreal)</small></span>
+      </label>
+      <label class="men-radio-label">
+        <input type="radio" name="menTemporada" value="JJA">
+        <span>❄️ Junio – Agosto <small>(Invierno austral / Verano boreal)</small></span>
+      </label>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="men-search-box">
+      <div class="men-input-wrapper">
+        <svg class="men-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="menDestinoInput" placeholder="Escribí un destino (ej. Florianópolis, Salvador de Bahía, Miami, Bariloche, Bali)..." autocomplete="off">
+        <button id="menLimpiarBtn" style="display: none;" title="Limpiar">&times;</button>
+      </div>
+      <div id="menSugerencias" class="men-autocomplete-list"></div>
+    </div>
+
+    <!-- RESULTADO DINÁMICO -->
+    <div id="menResultado" class="men-result-container" style="display: none;"></div>
+
+    <div class="men-footer">
+      <small>Fuente de referencia científica: <em>NOAA Climate.gov — El Niño Climate Impacts (December-February & June-August)</em>.</small>
+    </div>
+  </div>
+</div>
+
+<style>
+#monitor-el-nino-widget {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+#monitor-el-nino-widget * {
+  box-sizing: border-box;
+}
+
+.men-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.men-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.men-badge {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.men-header h2 {
+  font-size: 24px;
+  color: #0f172a;
+  margin: 6px 0 10px;
+  line-height: 1.3;
+}
+
+.men-header p {
+  color: #64748b;
+  font-size: 15px;
+  margin: 0;
+}
+
+/* SELECTOR DE TEMPORADA */
+.men-season-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .men-season-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
+.men-radio-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.men-radio-label:hover {
+  background: #f1f5f9;
+}
+
+.men-radio-label input {
+  margin-right: 10px;
+  accent-color: #0284c7;
+}
+
+.men-radio-label span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+}
+
+.men-radio-label small {
+  font-weight: 400;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.men-radio-label:has(input:checked) {
+  border-color: #0284c7;
+  background: #f0f9ff;
+}
+
+/* BUSCADOR */
+.men-search-box {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.men-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.men-icon {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+#menDestinoInput {
+  width: 100%;
+  padding: 14px 44px 14px 46px;
+  font-size: 16px;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+#menDestinoInput:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+}
+
+#menLimpiarBtn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+}
+
+.men-autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.men-autocomplete-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.men-autocomplete-item:hover {
+  background-color: #f8fafc;
+}
+
+/* CARDS DE RESULTADO Y COMBINACIONES NOAA */
+.men-result-container {
+  margin-top: 20px;
+  animation: menFadeIn 0.3s ease;
+}
+
+@keyframes menFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.men-res-card {
+  border-radius: 14px;
+  padding: 22px;
+  border-left: 6px solid;
+}
+
+/* Wet */
+.men-res-wet { background-color: #f0fdf4; border-color: #16a34a; color: #14532d; }
+.men-res-wet .men-res-tag { background: #bbf7d0; color: #14532d; }
+
+/* Warm */
+.men-res-warm { background-color: #fff7ed; border-color: #f97316; color: #7c2d12; }
+.men-res-warm .men-res-tag { background: #fed7aa; color: #7c2d12; }
+
+/* Dry */
+.men-res-dry { background-color: #fefce8; border-color: #ca8a04; color: #713f12; }
+.men-res-dry .men-res-tag { background: #fef08a; color: #713f12; }
+
+/* Warm and Dry */
+.men-res-warm-dry { background-color: #fdf2f2; border-color: #b45309; color: #78350f; }
+.men-res-warm-dry .men-res-tag { background: #fde68a; color: #78350f; }
+
+/* Cool and Wet */
+.men-res-cool-wet { background-color: #f0f9ff; border-color: #0284c7; color: #0c4a6e; }
+.men-res-cool-wet .men-res-tag { background: #bae6fd; color: #0c4a6e; }
+
+/* Neutral / Fuera de mapa */
+.men-res-neutral { background-color: #f1f5f9; border-color: #64748b; color: #1e293b; }
+.men-res-neutral .men-res-tag { background: #e2e8f0; color: #475569; }
+
+.men-res-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.men-res-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.men-res-body p {
+  margin: 8px 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.men-footer {
+  text-align: center;
+  margin-top: 22px;
+  color: #94a3b8;
+}
+</style>
+
+<script>
+// BASE DE DATOS SEGÚN EL MAPA NOAA CLIMATE.GOV (ESTACIONALIDAD DOBLE)
+const baseElNino = {
+  // DICIEMBRE - FEBRERO
+  DJF: [
+    {
+      nombres: [
+        "florianopolis", "floripa", "santa catarina", "camboriu", "bombinhas", "garopaba", "itapema",
+        "porto alegre", "rio grande do sul", "curitiba", "parana brasil", "foz do iguazu",
+        "uruguay", "punta del este", "montevideo", "rocha", "la paloma", "colonia",
+        "buenos aires", "costa atlantica", "mar del plata", "pinamar", "villa gesell",
+        "entre rios", "corrientes", "misiones", "iguazu", "litoral", "sur de brasil", "sudeste de brasil"
+      ],
+      region: "Sudeste de Sudamérica (Litoral argentino, Uruguay, Sur de Brasil)",
+      patron: "Wet",
+      categoria: "Húmedo (Wet)",
+      icono: "🌧️⚡",
+      clase: "men-res-wet",
+      impacto: "Precipitaciones significativamente por encima de la media. Alta frecuencia de tormentas severas, crecidas en ríos de la cuenca del Plata y días de playa interrumpidos por frentes de lluvia en el sur de Brasil y costa atlántica.",
+      consejo: "Revisar avisos de alerta temprana, prever actividades bajo techo y confirmar estado de accesos viales y balnearios de río."
+    },
+    {
+      nombres: [
+        "salvador de bahia", "salvador", "bahia", "porto seguro", "aracaju", "sergipe", "maceio", "alagoas",
+        "recife", "pernambuco", "rio de janeiro", "buzios", "arraial do cabo", "angra dos reis",
+        "sao paulo", "belo horizonte", "minas gerais", "este de brasil"
+      ],
+      region: "Este y Nordeste Costero de Brasil",
+      patron: "Warm",
+      categoria: "Cálido (Warm)",
+      icono: "🌡️☀️",
+      clase: "men-res-warm",
+      impacto: "Temperaturas anómalamente elevadas por encima del promedio histórico. Días de radiación muy intensa y persistencia de olas de calor costeras.",
+      consejo: "Excelente para playa continua, pero con recaudos indispensables de hidratación, evitar exposición solar entre 11:00 y 16:00 y garantizar aire acondicionado."
+    },
+    {
+      nombres: [
+        "fortaleza", "ceara", "natal", "pipa", "jericoacoara", "jeri", "maranhao", "sao luis", "belem", "para",
+        "manaus", "amazonia", "amazonas", "norte de brasil", "bogota", "colombia", "caracas", "venezuela", "guyana", "surinam"
+      ],
+      region: "Norte de Brasil, Cuenca Amazónica y Norte de Sudamérica",
+      patron: "Dry",
+      categoria: "Seco (Dry)",
+      icono: "🍂☀️",
+      clase: "men-res-dry",
+      impacto: "Supresión de lluvias estivales por desplazamiento de la convección. Sequía pronunciada, descenso del nivel de ríos navegables y estrés hídrico.",
+      consejo: "En playas de Ceará y Rio Grande do Norte asegura sol pleno; en la selva amazónica, verificar la navegabilidad de paseos fluviales por bajantes extremas."
+    },
+    {
+      nombres: [
+        "miami", "orlando", "florida", "texas", "houston", "louisiana", "new orleans", "california", "los angeles",
+        "san diego", "monterrey", "costa del golfo"
+      ],
+      region: "Sur de EE. UU. y Costa del Golfo",
+      patron: "Cool and Wet",
+      categoria: "Frío y Húmedo (Cool and Wet)",
+      icono: "🌧️🧥",
+      clase: "men-res-cool-wet",
+      impacto: "La corriente en chorro subtropical intensificada impulsa frentes fríos cargados de humedad hacia el Golfo y Florida, generando inviernos más frescos y lluviosos que lo normal con riesgo de tiempo severo.",
+      consejo: "Para parques temáticos o paseos urbanos, llevar abrigo liviano impermeable y monitorear radares ante chaparrones repentinos."
+    },
+    {
+      nombres: [
+        "sudafrica", "ciudad del cabo", "johannesburgo", "zimbabue", "cataratas victoria", "namibia", "mozambique", "botswana", "africa austral"
+      ],
+      region: "África Austral",
+      patron: "Warm and dry",
+      categoria: "Cálido y Seco (Warm and dry)",
+      icono: "🏜️🔥",
+      clase: "men-res-warm-dry",
+      impacto: "Combinación de calor agobiante y sequía severa. Caudales fluviales mínimos y mermas en saltos turísticos como Cataratas Victoria.",
+      consejo: "Excelente para safaris ya que los animales se concentran en aguadas artificiales; prever abastecimiento de agua y cuidado térmico."
+    },
+    {
+      nombres: [
+        "kenia", "nairobi", "tanzania", "serengeti", "zanzibar", "cuerno de africa", "etiopia"
+      ],
+      region: "África Oriental",
+      patron: "Wet",
+      categoria: "Húmedo (Wet)",
+      icono: "🌧️🚙",
+      clase: "men-res-wet",
+      impacto: "Lluvias muy por encima de la media. Rutas de tierra y accesos a parques nacionales con barro e inundaciones temporales.",
+      consejo: "Indispensable vehículo 4x4 pesado para traslados y seguro con cobertura médica amplia."
+    },
+    {
+      nombres: [
+        "bali", "indonesia", "yakarta", "filipinas", "manila", "tailandia", "bangkok", "phuket", "malasia", "kuala lumpur", "singapur"
+      ],
+      region: "Sudeste Asiático e Indonesia",
+      patron: "Warm and dry",
+      categoria: "Cálido y Seco (Warm and dry)",
+      icono: "🔥☀️",
+      clase: "men-res-warm-dry",
+      impacto: "Ambiente muy cálido y sequía marcada. Riesgo de humo ('haze') en la atmósfera por quema de rastrojos e incendios de vegetación.",
+      consejo: "Monitorear índices de calidad del aire (AQI) y asegurar hospedajes con filtros o climatización eficiente."
+    },
+    {
+      nombres: [
+        "sidney", "sydney", "melbourne", "brisbane", "adelaida", "sudeste de australia"
+      ],
+      region: "Sudeste de Australia",
+      patron: "Warm",
+      categoria: "Cálido (Warm)",
+      icono: "🌡️🔥",
+      clase: "men-res-warm",
+      impacto: "Temperaturas de verano por encima del promedio histórico y mayor riesgo de olas de calor intensas.",
+      consejo: "Consultar las alertas del Bureau of Meteorology (BOM) y respetar las vedas de fuego en áreas rurales y de acampe."
+    }
+  ],
+
+  // JUNIO - AGOSTO
+  JJA: [
+    {
+      nombres: [
+        "santiago", "valparaiso", "vina del mar", "la serena", "chile central", "rancagua", "portillo", "valle nevado"
+      ],
+      region: "Chile Central",
+      patron: "Wet",
+      categoria: "Húmedo (Wet)",
+      icono: "🌧️🏔️",
+      clase: "men-res-wet",
+      impacto: "Mayor recurrencia de temporales frontales de lluvia en valles costeros y abundantes nevadas en cordillera.",
+      consejo: "Temporada favorable para centros de esquí; monitorear estado de pasos cordilleranos por cierres temporales."
+    },
+    {
+      nombres: [
+        "lima", "mancora", "trujillo", "cusco", "machu picchu", "guayaquil", "quito", "costa de ecuador", "peru", "ecuador"
+      ],
+      region: "Ecuador, Perú y Zona Andina Central",
+      patron: "Warm",
+      categoria: "Cálido (Warm)",
+      icono: "🌡️☀️",
+      clase: "men-res-warm",
+      impacto: "Temperaturas del aire y de la superficie marina por encima de lo normal en pleno invierno austral.",
+      consejo: "Temperaturas costeras más amables para paseos marítimos; planificar caminatas andinas con abrigo por amplitud térmica."
+    },
+    {
+      nombres: [
+        "rio de janeiro", "sao paulo", "brasilia", "belo horizonte", "salvador de bahia", "centro y este de brasil"
+      ],
+      region: "Centro y Este de Brasil",
+      patron: "Warm",
+      categoria: "Cálido (Warm)",
+      icono: "🌡️🌴",
+      clase: "men-res-warm",
+      impacto: "Inviernos mucho más templados o cálidos de lo habitual, con anomalías positivas de temperatura.",
+      consejo: "Clima muy favorable para actividades al aire libre y turismo urbano o de playa sin frío invernal."
+    },
+    {
+      nombres: [
+        "caribe", "cancun", "punta cana", "cuba", "panama", "costa rica", "venezuela", "caracas", "norte de colombia", "cartagena", "santa marta"
+      ],
+      region: "Norte de Sudamérica y Cuenca del Caribe",
+      patron: "Warm and dry",
+      categoria: "Cálido y Seco (Warm and dry)",
+      icono: "☀️🏖️",
+      clase: "men-res-warm-dry",
+      impacto: "Verano boreal más caluroso y con menor humedad pluvial. El Niño suele generar vientos cortantes en altura que disminuyen la frecuencia de huracanes en el Atlántico.",
+      consejo: "Excelente para playa caribeña con menor riesgo ciclónico, pero con recaudos extremos frente al golpe de calor."
+    },
+    {
+      nombres: [
+        "bali", "indonesia", "yakarta", "papua nueva guinea", "norte de australia", "darwin", "cairns"
+      ],
+      region: "Indonesia y Norte de Australia",
+      patron: "Dry",
+      categoria: "Seco (Dry)",
+      icono: "🍂☀️",
+      clase: "men-res-dry",
+      impacto: "Déficit notorio de precipitaciones estacionales y ambiente árido.",
+      consejo: "Ideal para excursiones sin lluvias, previendo suficiente hidratación en zonas abiertas o agrestes."
+    },
+    {
+      nombres: [
+        "nueva zelanda", "auckland", "queenstown", "mar de tasmania"
+      ],
+      region: "Sudoeste del Pacífico (Nueva Zelanda)",
+      patron: "Cool and dry",
+      categoria: "Frío y Seco (Cool and dry)",
+      icono: "❄️🧥",
+      clase: "men-res-cool-wet",
+      impacto: "Invierno austral caracterizado por anomalías frías y menor humedad relativa en sectores del este/sur.",
+      consejo: "Indispensable ropa térmica técnica para actividades en nieve y centros invernales."
+    }
+  ]
+};
+
+const inputDestino = document.getElementById("menDestinoInput");
+const sugerenciasDiv = document.getElementById("menSugerencias");
+const resultadoDiv = document.getElementById("menResultado");
+const limpiarBtn = document.getElementById("menLimpiarBtn");
+const radiosTemporada = document.querySelectorAll('input[name="menTemporada"]');
+
+function obtenerTemporadaSeleccionada() {
+  return document.querySelector('input[name="menTemporada"]:checked').value;
+}
+
+// Búsqueda dinámica
+function procesarBusqueda() {
+  const query = inputDestino.value.toLowerCase().trim();
+  const temporada = obtenerTemporadaSeleccionada();
+  const baseActual = baseElNino[temporada];
+
+  if (query.length === 0) {
+    limpiarBtn.style.display = "none";
+    sugerenciasDiv.style.display = "none";
+    resultadoDiv.style.display = "none";
+    return;
+  }
+
+  limpiarBtn.style.display = "block";
+
+  // Buscar coincidencias
+  const matches = baseActual.filter(item =>
+    item.nombres.some(n => n.includes(query)) || item.region.toLowerCase().includes(query)
+  );
+
+  if (matches.length > 0) {
+    sugerenciasDiv.innerHTML = "";
+    matches.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "men-autocomplete-item";
+      div.innerHTML = `<span>📍 <strong>${item.region}</strong></span> <span style="font-size:12px; font-weight:700;">${item.categoria}</span>`;
+      div.onclick = () => {
+        inputDestino.value = item.region;
+        sugerenciasDiv.style.display = "none";
+        mostrarTarjetaResultado(item, temporada);
+      };
+      sugerenciasDiv.appendChild(div);
+    });
+    sugerenciasDiv.style.display = "block";
+    mostrarTarjetaResultado(matches[0], temporada);
+  } else {
+    sugerenciasDiv.style.display = "none";
+    mostrarResultadoNeutral(query, temporada);
+  }
+}
+
+function mostrarTarjetaResultado(data, temporada) {
+  const nombreTemp = temporada === "DJF" ? "Diciembre a Febrero" : "Junio a Agosto";
+
+  resultadoDiv.innerHTML = `
+    <div class="men-res-card ${data.clase}">
+      <div class="men-res-title">
+        <span>${data.icono}</span>
+        <span>${data.region}</span>
+      </div>
+      <div class="men-res-tag">
+        Patrón NOAA: ${data.categoria} | Ventana: ${nombreTemp}
+      </div>
+      <div class="men-res-body">
+        <p><strong>Comportamiento esperado:</strong> ${data.impacto}</p>
+        <p><strong>💡 Recomendación para el viajero:</strong> ${data.consejo}</p>
+      </div>
+    </div>
+  `;
+  resultadoDiv.style.display = "block";
+}
+
+function mostrarResultadoNeutral(query, temporada) {
+  const q = query.toLowerCase();
+  const nombreTemp = temporada === "DJF" ? "Diciembre a Febrero" : "Junio a Agosto";
+  let contextoEstacional = "se rige por su climatología estacional típica y por los sistemas meteorológicos regionales a corto plazo, más que por una señal determinante de El Niño en esta época.";
+
+  if (q.includes("mendoza") || q.includes("san juan") || q.includes("cuyo")) {
+    contextoEstacional = temporada === "DJF" 
+      ? "se caracteriza en verano por clima semiárido, alta radiación solar, temperaturas elevadas y tormentas convectivas aisladas (a menudo con granizo) típicas de la orografía cordillerana."
+      : "se caracteriza en invierno por días secos y soleados con noches muy frías y nevadas focalizadas en alta cordillera.";
+  } else if (q.includes("bariloche") || q.includes("patagonia") || q.includes("ushuaia") || q.includes("calafate")) {
+    contextoEstacional = temporada === "DJF"
+      ? "presenta en época estival su régimen habitual de vientos del oeste, baja humedad, menor probabilidad de lluvias y noches frescas, respondiendo a frentes subpolares más que a El Niño."
+      : "mantiene su régimen invernal con bajas temperaturas, heladas continuas y precipitaciones níveas asociadas a la oscilación antártica.";
+  } else if (q.includes("cordoba") || q.includes("sierras") || q.includes("carlos paz")) {
+    contextoEstacional = temporada === "DJF"
+      ? "sigue su patrón habitual de verano: calor con episodios de tormentas orográficas intensas capaces de generar crecidas repentinas en ríos serranos."
+      : "presenta inviernos secos y templados de día con marcado enfriamiento nocturno.";
+  } else if (q.includes("europa") || q.includes("madrid") || q.includes("roma") || q.includes("paris")) {
+    contextoEstacional = "responde a los patrones de circulación del Atlántico Norte (NAO) y a la estacionalidad europea habitual, sin correlación estadística directa unívoca de El Niño en el mapa de NOAA.";
+  }
+
+  resultadoDiv.innerHTML = `
+    <div class="men-res-card men-res-neutral">
+      <div class="men-res-title">
+        <span>🌐</span>
+        <span>${query.charAt(0).toUpperCase() + query.slice(1)}</span>
+      </div>
+      <div class="men-res-tag">
+        Zona sin señal directa de El Niño en ${nombreTemp} (según NOAA Climate.gov)
+      </div>
+      <div class="men-res-body">
+        <p><strong>¿Por qué no figura en el mapa?</strong> Para esta época del año (${nombreTemp}), este destino no presenta una correlación estadística robusta de exceso, déficit térmico o pluvial directamente atribuible a El Niño en los modelos globales.</p>
+        <p><strong>Patrones comunes en esta época:</strong> Su comportamiento meteorológico <em>${contextoEstacional}</em></p>
+        <p><strong>💡 Recomendación para el viajero:</strong> Planificá tu viaje tomando como referencia los promedios climáticos habituales del lugar y los pronósticos oficiales locales de corto plazo (a 3-7 días).</p>
+      </div>
+    </div>
+  `;
+  resultadoDiv.style.display = "block";
+}
+
+// Eventos
+inputDestino.addEventListener("input", procesarBusqueda);
+
+radiosTemporada.forEach(radio => {
+  radio.addEventListener("change", () => {
+    if (inputDestino.value.trim().length > 0) {
+      procesarBusqueda();
+    }
+  });
+});
+
+limpiarBtn.addEventListener("click", () => {
+  inputDestino.value = "";
+  limpiarBtn.style.display = "none";
+  sugerenciasDiv.style.display = "none";
+  resultadoDiv.style.display = "none";
+  inputDestino.focus();
+});
+
+document.addEventListener("click", function(e) {
+  if (!document.getElementById("monitor-el-nino-widget").contains(e.target)) {
+    sugerenciasDiv.style.display = "none";
+  }
+});
+</script>
