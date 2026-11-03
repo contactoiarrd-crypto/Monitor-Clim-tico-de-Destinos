@@ -1,0 +1,16 @@
+{
+  "background_color": "#31a054",
+  "description": "Monitor en tiempo real de alertas tempranas, riesgo de incendios y cruce de impacto estacional de El Niño (NOAA) en destinos turísticos. Integrado con alertatemprana.online.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Monitor Climatico de Destinos",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Monitor de Destinos",
+  "start_url": "/",
+  "theme_color": "#1b21c9",
+  "id": "Monitor",
+  "categories": [
+    "weather"
+  ]
+}
