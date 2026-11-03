@@ -24,7 +24,8 @@ import {
   Globe, 
   ExternalLink,
   Bell,
-  BellRing
+  BellRing,
+  RotateCcw
 } from 'lucide-react';
 import { SeasonKey } from './data/noaaClimateData';
 import { CURATED_DESTINATIONS, DestinationInfo } from './data/destinationsDatabase';
@@ -306,14 +307,23 @@ export default function App() {
     executeSearch(dest.name, season);
   };
 
-  const handleClearSearch = () => {
+  const handleClearSelection = () => {
     setSearchQuery('');
+    setCurrentResult(null);
+    setTacticalWeather(null);
     setSuggestions([]);
     setShowSuggestions(false);
+    if (typeof window !== 'undefined' && window.history) {
+      const url = new URL(window.location.href);
+      url.search = '';
+      window.history.replaceState({}, '', url.pathname);
+    }
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   };
+
+  const handleClearSearch = handleClearSelection;
 
   // User click on Map
   const handleMapLocationSelected = async (lat: number, lng: number, placeName?: string) => {
@@ -545,12 +555,12 @@ export default function App() {
             />
 
             <div className="absolute right-3 flex items-center gap-1.5">
-              {searchQuery && (
+              {(searchQuery || currentResult) && (
                 <button
                   type="button"
-                  onClick={handleClearSearch}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
-                  title="Borrar texto"
+                  onClick={handleClearSelection}
+                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded-full hover:bg-rose-50 transition-colors cursor-pointer"
+                  title="Borrar selección y limpiar buscador"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -586,6 +596,30 @@ export default function App() {
               </button>
             </div>
           </form>
+
+          {/* Active selection badge with quick clear action */}
+          {currentResult && (
+            <div className="flex items-center justify-between mt-2.5 px-3.5 py-1.5 bg-sky-50/90 border border-sky-200 rounded-xl text-xs shadow-2xs">
+              <div className="flex items-center gap-2 truncate">
+                <span className="font-semibold text-slate-500">Destino activo:</span>
+                <span className="font-bold text-sky-900 truncate">
+                  {currentResult.matchedName} {currentResult.country ? `(${currentResult.country})` : ''}
+                </span>
+                <span className="hidden sm:inline-block text-sky-700 bg-sky-100 px-2 py-0.5 rounded-md font-medium">
+                  {currentResult.detectedZone}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleClearSelection}
+                className="inline-flex items-center gap-1 font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-100/70 px-2 py-1 rounded-lg transition-colors cursor-pointer shrink-0 ml-2"
+                title="Borrar selección actual y realizar una nueva búsqueda"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Borrar selección</span>
+              </button>
+            </div>
+          )}
 
           {/* Autocomplete Dropdown List */}
           {showSuggestions && suggestions.length > 0 && (
@@ -691,6 +725,18 @@ export default function App() {
                     <span>Exportar Ficha</span>
                   </button>
                 )}
+
+                {currentResult && (
+                  <button
+                    type="button"
+                    onClick={handleClearSelection}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-bold text-xs transition-colors border border-slate-200 hover:border-rose-200 cursor-pointer shadow-2xs"
+                    title="Borrar selección actual y volver al inicio"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Borrar selección</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -764,6 +810,7 @@ export default function App() {
                   season={season}
                   onToggleSeason={() => setSeason(season === 'DJF' ? 'JJA' : 'DJF')}
                   onOpenExportPdf={() => setIsPdfModalOpen(true)}
+                  onClearSelection={handleClearSelection}
                   isWatched={isCurrentDestinationWatched}
                   onToggleWatch={handleToggleWatchCurrentDestination}
                 />

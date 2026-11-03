@@ -13,7 +13,8 @@ import {
   Calendar, 
   CheckCircle2, 
   Info,
-  FileDown
+  FileDown,
+  RotateCcw
 } from 'lucide-react';
 import { WatchDestinationButton } from './WatchDestinationButton';
 
@@ -22,6 +23,7 @@ interface DestinationResultCardProps {
   season: SeasonKey;
   onToggleSeason: () => void;
   onOpenExportPdf: () => void;
+  onClearSelection?: () => void;
   isWatched?: boolean;
   onToggleWatch?: () => void;
 }
@@ -31,6 +33,7 @@ export function DestinationResultCard({
   season, 
   onToggleSeason, 
   onOpenExportPdf,
+  onClearSelection,
   isWatched = false,
   onToggleWatch
 }: DestinationResultCardProps) {
@@ -130,6 +133,17 @@ export function DestinationResultCard({
             <FileDown className="w-4 h-4 text-sky-300" />
             <span>Exportar PDF</span>
           </button>
+
+          {onClearSelection && (
+            <button
+              onClick={onClearSelection}
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 text-xs md:text-sm font-semibold transition-colors border border-slate-200 hover:border-rose-200 cursor-pointer shadow-xs"
+              title="Borrar selección actual y realizar una nueva búsqueda"
+            >
+              <RotateCcw className="w-4 h-4 text-rose-500" />
+              <span>Borrar selección</span>
+            </button>
+          )}
         </div>
       </div>
 

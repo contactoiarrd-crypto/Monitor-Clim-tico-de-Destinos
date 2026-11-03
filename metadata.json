@@ -2,5 +2,7 @@
   "name": "Monitor Climático El Niño para Destinos Turísticos",
   "description": "Herramienta interactiva para consultar el impacto y las anomalías de El Niño (NOAA Climate.gov) en destinos turísticos y localidades del mundo.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
