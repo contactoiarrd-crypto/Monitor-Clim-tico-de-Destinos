@@ -107,12 +107,22 @@ export function inferZoneFromAddress(
     return 'Patagonia Andina y Austral';
   }
 
-  // Brasil Sur (Santa Catarina, Rio Grande do Sul, Paraná)
+  // Brasil
   if (normCountry.includes('brasil') || normCountry.includes('brazil')) {
-    if (normState.includes('santa catarina')) return 'Sur de Brasil (Costa de Santa Catarina)';
+    if (normState.includes('rio de janeiro') || normName.includes('rio de janeiro')) {
+      if (normName.includes('cabo frio') || normName.includes('buzios') || normName.includes('búzios') || normName.includes('arraial')) {
+        return 'Região dos Lagos (Costa de Río de Janeiro, Brasil)';
+      }
+      if (normName.includes('angra') || normName.includes('paraty') || normName.includes('ilha grande')) {
+        return 'Costa Verde (Litoral de Río de Janeiro, Brasil)';
+      }
+      return 'Sudeste de Brasil (Costa de Río de Janeiro)';
+    }
+    if (normState.includes('santa catarina') || normName.includes('santa catarina')) {
+      return 'Sur de Brasil (Costa de Santa Catarina)';
+    }
     if (normState.includes('rio grande do sul')) return 'Sur de Brasil (Región Gaúcha)';
-    if (normState.includes('rio de janeiro')) return 'Sudeste de Brasil (Costa de Río de Janeiro)';
-    if (normState.includes('bahia')) return 'Nordeste de Brasil (Litoral Bahiano)';
+    if (normState.includes('bahia') || normName.includes('bahia')) return 'Nordeste de Brasil (Litoral Bahiano)';
     if (normState.includes('ceara') || normState.includes('rio grande do norte')) return 'Norte y Nordeste Septentrional de Brasil';
     return 'Brasil';
   }
@@ -222,32 +232,28 @@ export function generateNeutralPrognosis(
   };
 }
 
-// Search curated database first
+// Search curated database first - strictly respecting specific localities
 export function searchCuratedDatabase(query: string): DestinationInfo | null {
   const normQ = normalizeStr(query);
   if (!normQ) return null;
 
-  // Exact match on id or name
+  // 1. Exact match on name or id
   const exact = CURATED_DESTINATIONS.find(
-    d => normalizeStr(d.name) === normQ || d.id === normQ || normalizeStr(d.detectedZone) === normQ
+    d => normalizeStr(d.name) === normQ || d.id === normQ
   );
   if (exact) return exact;
 
-  // Check aliases
-  const byAlias = CURATED_DESTINATIONS.find(d =>
-    d.aliases.some(a => {
-      const normA = normalizeStr(a);
-      return normA === normQ || (normQ.length >= 4 && (normQ.includes(normA) || normA.includes(normQ)));
-    })
+  // 2. Exact match on an alias
+  const byExactAlias = CURATED_DESTINATIONS.find(d =>
+    d.aliases.some(a => normalizeStr(a) === normQ)
   );
-  if (byAlias) return byAlias;
+  if (byExactAlias) return byExactAlias;
 
-  // Partial match on name
-  const partial = CURATED_DESTINATIONS.find(d => {
-    const normN = normalizeStr(d.name);
-    return normN.includes(normQ) || normQ.includes(normN);
-  });
-  if (partial) return partial;
+  // 3. Prefix match on name (e.g. "cabo fri" -> "Cabo Frio")
+  const prefix = CURATED_DESTINATIONS.find(d =>
+    normalizeStr(d.name).startsWith(normQ)
+  );
+  if (prefix) return prefix;
 
   return null;
 }

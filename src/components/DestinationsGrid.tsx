@@ -8,7 +8,7 @@ interface DestinationsGridProps {
 }
 
 export function DestinationsGrid({ onSelectDestination, activeDestinationName }: DestinationsGridProps) {
-  const popularDestinations = CURATED_DESTINATIONS.filter(d => d.popular).slice(0, 16);
+  const popularDestinations = CURATED_DESTINATIONS.filter(d => d.popular).slice(0, 24);
 
   return (
     <div className="w-full bg-white rounded-3xl p-6 shadow-sm border border-slate-200">

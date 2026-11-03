@@ -1,21 +1,20 @@
 export interface DestinationInfo {
   id: string;
-  name: string; // "Mar del Plata"
-  detectedZone: string; // "Costa Argentina / Costa Atlántica"
-  country: string; // "Argentina"
-  stateOrProvince?: string; // "Buenos Aires"
+  name: string; // "Cabo Frio", "Mar del Plata"
+  detectedZone: string; // "Costa Argentina", "Região dos Lagos (Costa de Río de Janeiro)"
+  country: string; // "Argentina", "Brasil"
+  stateOrProvince?: string; // "Buenos Aires", "Rio de Janeiro"
   coords: [number, number]; // [lat, lng]
-  aliases: string[]; // for fuzzy search
+  aliases: string[]; // specific synonyms only
   popular: boolean;
   tag?: string; // e.g. "Playa", "Nieve / Montaña", "Selva", "Ciudad"
-  // Specific contextual notes for when this destination is outside direct NOAA zone
   neutralSeasonNoteDJF?: string;
   neutralSeasonNoteJJA?: string;
 }
 
 export const CURATED_DESTINATIONS: DestinationInfo[] = [
   // ==========================================
-  // COSTA ARGENTINA & BUENOS AIRES
+  // COSTA ARGENTINA (CADA LOCALIDAD INDIVIDUAL)
   // ==========================================
   {
     id: 'mar_del_plata',
@@ -24,7 +23,7 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-38.0055, -57.5426],
-    aliases: ['mar del plata', 'mardel', 'la feliz', 'mdq', 'costa argentina', 'playa mar del plata'],
+    aliases: ['mar del plata', 'mardel', 'la feliz', 'mdq'],
     popular: true,
     tag: 'Playa & Ciudad Costera'
   },
@@ -35,9 +34,20 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-37.1084, -56.8584],
-    aliases: ['pinamar', 'carilo', 'cariló', 'valeria del mar', 'ostende', 'costa argentina'],
+    aliases: ['pinamar'],
     popular: true,
     tag: 'Playa & Bosque'
+  },
+  {
+    id: 'carilo',
+    name: 'Cariló',
+    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    country: 'Argentina',
+    stateOrProvince: 'Buenos Aires',
+    coords: [-37.1678, -56.8928],
+    aliases: ['carilo', 'cariló', 'valeria del mar'],
+    popular: true,
+    tag: 'Bosque & Playa Exclusiva'
   },
   {
     id: 'villa_gesell',
@@ -46,8 +56,52 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-37.2639, -56.9731],
-    aliases: ['villa gesell', 'gesell', 'mar de las pampas', 'las gaviotas', 'mar azul', 'costa argentina'],
+    aliases: ['villa gesell', 'gesell'],
     popular: true,
+    tag: 'Playa & Médanos'
+  },
+  {
+    id: 'mar_de_las_pampas',
+    name: 'Mar de las Pampas',
+    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    country: 'Argentina',
+    stateOrProvince: 'Buenos Aires',
+    coords: [-37.3325, -57.0261],
+    aliases: ['mar de las pampas', 'las gaviotas', 'mar azul'],
+    popular: true,
+    tag: 'Bosque & Mar'
+  },
+  {
+    id: 'san_bernardo',
+    name: 'San Bernardo',
+    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    country: 'Argentina',
+    stateOrProvince: 'Buenos Aires',
+    coords: [-36.6872, -56.6908],
+    aliases: ['san bernardo', 'la costa san bernardo'],
+    popular: true,
+    tag: 'Playa'
+  },
+  {
+    id: 'san_clemente',
+    name: 'San Clemente del Tuyú',
+    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    country: 'Argentina',
+    stateOrProvince: 'Buenos Aires',
+    coords: [-36.3569, -56.7235],
+    aliases: ['san clemente', 'san clemente del tuyu', 'san clemente del tuyú', 'punta rasa'],
+    popular: true,
+    tag: 'Playa & Termas Marinas'
+  },
+  {
+    id: 'santa_teresita',
+    name: 'Santa Teresita / Mar del Tuyú',
+    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    country: 'Argentina',
+    stateOrProvince: 'Buenos Aires',
+    coords: [-36.5414, -56.6908],
+    aliases: ['santa teresita', 'mar del tuyu', 'mar del tuyú', 'costa del este'],
+    popular: false,
     tag: 'Playa'
   },
   {
@@ -57,31 +111,31 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-38.2731, -57.8344],
-    aliases: ['miramar', 'mar del sur', 'costa argentina'],
+    aliases: ['miramar', 'mar del sur'],
     popular: false,
-    tag: 'Playa'
+    tag: 'Playa Familiar'
   },
   {
     id: 'necochea',
-    name: 'Necochea',
+    name: 'Necochea / Quequén',
     detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-38.5545, -58.7396],
-    aliases: ['necochea', 'quequen', 'quequén', 'costa argentina'],
+    aliases: ['necochea', 'quequen', 'quequén'],
     popular: false,
-    tag: 'Playa'
+    tag: 'Playas Amplias & Surf'
   },
   {
-    id: 'partido_de_la_costa',
-    name: 'Partido de La Costa (San Bernardo / San Clemente)',
-    detectedZone: 'Costa Argentina (Costa Atlántica Bonaerense)',
+    id: 'claromeco',
+    name: 'Claromecó',
+    detectedZone: 'Costa Argentina (Costa Atlántica Sur Bonaerense)',
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
-    coords: [-36.6872, -56.6908],
-    aliases: ['san bernardo', 'san clemente', 'san clemente del tuyu', 'mar de ajo', 'mar de ajó', 'santa teresita', 'mar del tuyu', 'costa del este', 'costa argentina'],
-    popular: true,
-    tag: 'Playa'
+    coords: [-38.8558, -60.0767],
+    aliases: ['claromeco', 'claromecó', 'tres arroyos'],
+    popular: false,
+    tag: 'Playa & Faro'
   },
   {
     id: 'monte_hermoso',
@@ -90,9 +144,9 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Buenos Aires',
     coords: [-38.9833, -61.2833],
-    aliases: ['monte hermoso', 'pehuen co', 'claromeco', 'claromecó', 'costa argentina'],
+    aliases: ['monte hermoso', 'pehuen co', 'pehuén có'],
     popular: false,
-    tag: 'Playa'
+    tag: 'Playa de Aguas Cálidas'
   },
   {
     id: 'buenos_aires',
@@ -101,61 +155,315 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Ciudad Autónoma de Buenos Aires',
     coords: [-34.6037, -58.3816],
-    aliases: ['buenos aires', 'caba', 'capital federal', 'tigre', 'san isidro', 'la plata', 'delta'],
+    aliases: ['buenos aires', 'caba', 'capital federal', 'tigre', 'san isidro', 'la plata'],
     popular: true,
     tag: 'Metrópolis Urbana & Cultura'
   },
 
   // ==========================================
-  // LITORAL ARGENTINO & CUENCA DEL PLATA
+  // BRASIL - REGIÃO DOS LAGOS & RÍO DE JANEIRO (LOCALIDADES INDIVIDUALES)
   // ==========================================
   {
-    id: 'iguazu',
-    name: 'Cataratas del Iguazú / Puerto Iguazú',
-    detectedZone: 'Litoral y Selva Misionera (Cuenca del Plata)',
-    country: 'Argentina',
-    stateOrProvince: 'Misiones',
-    coords: [-25.5976, -54.5779],
-    aliases: ['iguazu', 'iguazú', 'cataratas', 'cataratas del iguazu', 'puerto iguazu', 'foz do iguacu', 'misiones'],
+    id: 'cabo_frio',
+    name: 'Cabo Frio',
+    detectedZone: 'Região dos Lagos (Costa de Río de Janeiro, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-22.8808, -42.0184],
+    aliases: ['cabo frio', 'praia do forte cabo frio', 'peroo'],
     popular: true,
-    tag: 'Naturaleza & Maravilla del Mundo'
+    tag: 'Playas de Arena Blanca & Dunas'
   },
   {
-    id: 'rosario',
-    name: 'Rosario / Ribera del Paraná',
-    detectedZone: 'Litoral Sur y Ribera del Paraná',
-    country: 'Argentina',
-    stateOrProvince: 'Santa Fe',
-    coords: [-32.9468, -60.6393],
-    aliases: ['rosario', 'santa fe', 'san nicolas', 'parana'],
-    popular: false,
-    tag: 'Río & Gastronomía'
-  },
-  {
-    id: 'entre_rios_termas',
-    name: 'Colón / Gualeguaychú (Entre Ríos)',
-    detectedZone: 'Litoral del Río Uruguay (Entre Ríos)',
-    country: 'Argentina',
-    stateOrProvince: 'Entre Ríos',
-    coords: [-32.2228, -58.1439],
-    aliases: ['colon', 'colón', 'gualeguaychu', 'gualeguaychú', 'concordia', 'federacion', 'federación', 'entre rios'],
+    id: 'buzios',
+    name: 'Búzios (Armação dos Búzios)',
+    detectedZone: 'Região dos Lagos (Costa de Río de Janeiro, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-22.7469, -41.8817],
+    aliases: ['buzios', 'búzios', 'armacao dos buzios', 'armação dos búzios', 'geriba', 'joao fernandes'],
     popular: true,
-    tag: 'Termas & Playas de Río'
+    tag: 'Playas Exclusivas & Gastronomía'
   },
   {
-    id: 'esteros_del_ibera',
-    name: 'Esteros del Iberá',
-    detectedZone: 'Litoral y Humedales de Corrientes',
-    country: 'Argentina',
-    stateOrProvince: 'Corrientes',
-    coords: [-28.5144, -57.1994],
-    aliases: ['esteros del ibera', 'esteros del iberá', 'ibera', 'corrientes', 'carlos pellegrini'],
+    id: 'arraial_do_cabo',
+    name: 'Arraial do Cabo',
+    detectedZone: 'Região dos Lagos (Costa de Río de Janeiro, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-22.9661, -42.0278],
+    aliases: ['arraial do cabo', 'arraial', 'el caribe brasilero', 'praia do farol'],
+    popular: true,
+    tag: 'Buceo & Aguas Turquesas'
+  },
+  {
+    id: 'rio_de_janeiro',
+    name: 'Río de Janeiro',
+    detectedZone: 'Sudeste de Brasil (Costa Carioca)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-22.9068, -43.1729],
+    aliases: ['rio de janeiro', 'río de janeiro', 'rio', 'copacabana', 'ipanema', 'leblon', 'barra da tijuca'],
+    popular: true,
+    tag: 'Playas Icónicas & Fiesta'
+  },
+  {
+    id: 'angra_dos_reis',
+    name: 'Angra dos Reis / Ilha Grande',
+    detectedZone: 'Costa Verde (Litoral de Río de Janeiro, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-23.0067, -44.3181],
+    aliases: ['angra dos reis', 'angra', 'ilha grande', 'abraao'],
     popular: false,
-    tag: 'Ecoturismo & Fauna'
+    tag: 'Islas, Vela & Selva'
+  },
+  {
+    id: 'paraty',
+    name: 'Paraty',
+    detectedZone: 'Costa Verde (Litoral de Río de Janeiro, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio de Janeiro',
+    coords: [-23.2178, -44.7131],
+    aliases: ['paraty', 'parati'],
+    popular: false,
+    tag: 'Ciudad Colonial & Playas'
   },
 
   // ==========================================
-  // PATAGONIA & CUYO (Zonas con climatología específica)
+  // BRASIL - SANTA CATARINA & SUR (LOCALIDADES INDIVIDUALES)
+  // ==========================================
+  {
+    id: 'florianopolis',
+    name: 'Florianópolis (Floripa)',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-27.5954, -48.5480],
+    aliases: ['florianopolis', 'florianópolis', 'floripa', 'canasvieiras', 'ingleses', 'jurere'],
+    popular: true,
+    tag: 'Playas, Surf & Vida Nocturna'
+  },
+  {
+    id: 'balneario_camboriu',
+    name: 'Balneário Camboriú',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-26.9926, -48.6352],
+    aliases: ['camboriu', 'camboriú', 'balneario camboriu', 'balneário camboriú'],
+    popular: true,
+    tag: 'Rascacielos, Playa & Vida Nocturna'
+  },
+  {
+    id: 'bombinhas',
+    name: 'Bombinhas',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-27.1408, -48.5147],
+    aliases: ['bombinhas', 'mariscal', 'quatro ilhas', 'bombas'],
+    popular: true,
+    tag: 'Playas Cristalinas & Snorkel'
+  },
+  {
+    id: 'garopaba',
+    name: 'Garopaba',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-28.0261, -48.6186],
+    aliases: ['garopaba', 'siriu', 'ferrugem'],
+    popular: true,
+    tag: 'Surf & Naturaleza'
+  },
+  {
+    id: 'praia_do_rosa',
+    name: 'Praia do Rosa',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-28.1283, -48.6508],
+    aliases: ['praia do rosa', 'rosa', 'imbituba'],
+    popular: true,
+    tag: 'Playas Vírgenes & Ballenas'
+  },
+  {
+    id: 'itapema',
+    name: 'Itapema / Porto Belo',
+    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
+    country: 'Brasil',
+    stateOrProvince: 'Santa Catarina',
+    coords: [-27.0911, -48.6108],
+    aliases: ['itapema', 'meia praia', 'porto belo'],
+    popular: false,
+    tag: 'Playa & Náutica'
+  },
+
+  // ==========================================
+  // BRASIL - BAHÍA & NORDESTE
+  // ==========================================
+  {
+    id: 'salvador_bahia',
+    name: 'Salvador de Bahía',
+    detectedZone: 'Nordeste de Brasil (Litoral de Bahía)',
+    country: 'Brasil',
+    stateOrProvince: 'Bahia',
+    coords: [-12.9777, -38.5016],
+    aliases: ['salvador de bahia', 'salvador', 'bahia', 'bahía', 'pelourinho'],
+    popular: true,
+    tag: 'Cultura Afro-Brasileña & Playa'
+  },
+  {
+    id: 'porto_seguro',
+    name: 'Porto Seguro',
+    detectedZone: 'Costa del Descubrimiento (Sur de Bahía, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Bahia',
+    coords: [-16.4498, -39.0647],
+    aliases: ['porto seguro', 'arraial dajuda', 'arraial d ayuda'],
+    popular: true,
+    tag: 'Playas, Fiestas & Axé'
+  },
+  {
+    id: 'trancoso',
+    name: 'Trancoso',
+    detectedZone: 'Costa del Descubrimiento (Sur de Bahía, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Bahia',
+    coords: [-16.5911, -39.0942],
+    aliases: ['trancoso', 'quadrado'],
+    popular: false,
+    tag: 'Playa Bohemia Exclusiva'
+  },
+  {
+    id: 'morro_de_sao_paulo',
+    name: 'Morro de São Paulo',
+    detectedZone: 'Costa do Dendê (Bahía, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Bahia',
+    coords: [-13.3808, -38.9158],
+    aliases: ['morro de sao paulo', 'morro de são paulo', 'morro'],
+    popular: true,
+    tag: 'Isla Peatonal & Playas'
+  },
+  {
+    id: 'fortaleza',
+    name: 'Fortaleza',
+    detectedZone: 'Norte y Nordeste Septentrional de Brasil',
+    country: 'Brasil',
+    stateOrProvince: 'Ceará',
+    coords: [-3.7319, -38.5267],
+    aliases: ['fortaleza', 'ceara', 'ceará'],
+    popular: true,
+    tag: 'Metrópolis Costera & Playa'
+  },
+  {
+    id: 'jericoacoara',
+    name: 'Jericoacoara (Jeri)',
+    detectedZone: 'Costa de Ceará (Norte de Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Ceará',
+    coords: [-2.7958, -40.5139],
+    aliases: ['jericoacoara', 'jeri'],
+    popular: true,
+    tag: 'Dunas, Lagunas & Kitesurf'
+  },
+  {
+    id: 'natal',
+    name: 'Natal / Pipa',
+    detectedZone: 'Nordeste Oriental de Brasil (Rio Grande do Norte)',
+    country: 'Brasil',
+    stateOrProvince: 'Rio Grande do Norte',
+    coords: [-5.7945, -35.2110],
+    aliases: ['natal', 'pipa', 'praia da pipa', 'tibau do sul'],
+    popular: true,
+    tag: 'Dunas & Delfines'
+  },
+  {
+    id: 'porto_de_galinhas',
+    name: 'Porto de Galinhas / Recife',
+    detectedZone: 'Nordeste Oriental de Brasil (Pernambuco)',
+    country: 'Brasil',
+    stateOrProvince: 'Pernambuco',
+    coords: [-8.5042, -35.0069],
+    aliases: ['porto de galinhas', 'recife', 'muro alto', 'maracaipe'],
+    popular: true,
+    tag: 'Piscinas Naturales & Corales'
+  },
+  {
+    id: 'maceio',
+    name: 'Maceió / Maragogi',
+    detectedZone: 'Costa dos Corais (Alagoas, Brasil)',
+    country: 'Brasil',
+    stateOrProvince: 'Alagoas',
+    coords: [-9.6658, -35.7351],
+    aliases: ['maceio', 'maceió', 'maragogi', 'sao miguel dos milagres'],
+    popular: true,
+    tag: 'Aguas Esmeralda & Barrera de Coral'
+  },
+
+  // ==========================================
+  // URUGUAY (LOCALIDADES INDIVIDUALES)
+  // ==========================================
+  {
+    id: 'punta_del_este',
+    name: 'Punta del Este',
+    detectedZone: 'Costa de Maldonado (Atlántico Uruguayo)',
+    country: 'Uruguay',
+    stateOrProvince: 'Maldonado',
+    coords: [-34.9667, -54.9500],
+    aliases: ['punta del este', 'punta', 'la barra'],
+    popular: true,
+    tag: 'Playa Exclusiva & Gastronomía'
+  },
+  {
+    id: 'jose_ignacio',
+    name: 'José Ignacio',
+    detectedZone: 'Costa Atlántica de Maldonado (Uruguay)',
+    country: 'Uruguay',
+    stateOrProvince: 'Maldonado',
+    coords: [-34.8519, -54.6331],
+    aliases: ['jose ignacio', 'josé ignacio'],
+    popular: false,
+    tag: 'Playa Chic & Faro'
+  },
+  {
+    id: 'la_paloma_rocha',
+    name: 'La Paloma / Cabo Polonio (Rocha)',
+    detectedZone: 'Costa Oceánica de Rocha (Uruguay)',
+    country: 'Uruguay',
+    stateOrProvince: 'Rocha',
+    coords: [-34.6667, -54.1667],
+    aliases: ['la paloma', 'cabo polonio', 'punta del diablo', 'rocha', 'la pedrera'],
+    popular: true,
+    tag: 'Playas Oceánicas & Ecoturismo'
+  },
+  {
+    id: 'montevideo',
+    name: 'Montevideo',
+    detectedZone: 'Costa de Uruguay y Río de la Plata',
+    country: 'Uruguay',
+    stateOrProvince: 'Montevideo',
+    coords: [-34.9011, -56.1645],
+    aliases: ['montevideo', 'rambla de montevideo'],
+    popular: false,
+    tag: 'Rambla, Historia & Cultura'
+  },
+  {
+    id: 'colonia',
+    name: 'Colonia del Sacramento',
+    detectedZone: 'Riberas del Río de la Plata (Uruguay)',
+    country: 'Uruguay',
+    stateOrProvince: 'Colonia',
+    coords: [-34.4714, -57.8442],
+    aliases: ['colonia', 'colonia del sacramento'],
+    popular: false,
+    tag: 'Casco Histórico Colonial'
+  },
+
+  // ==========================================
+  // PATAGONIA & CUYO ARGENTINA (LOCALIDADES INDIVIDUALES)
   // ==========================================
   {
     id: 'bariloche',
@@ -164,33 +472,77 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Río Negro',
     coords: [-41.1335, -71.3103],
-    aliases: ['bariloche', 'san carlos de bariloche', 'villa la angostura', 'villa traful', 'el bolson', 'el bolsón', 'esquel', 'san martin de los andes', 'san martín de los andes'],
+    aliases: ['bariloche', 'san carlos de bariloche', 'cerro catedral'],
     popular: true,
     tag: 'Montaña, Nieve & Lagos',
     neutralSeasonNoteDJF: 'En verano (Diciembre-Febrero), la Patagonia Andina goza de su mejor época: días largos, soleados, muy baja humedad y vientos moderados del oeste. Espléndido para trekking, navegación lacustre y playas de lago.',
     neutralSeasonNoteJJA: 'En invierno (Junio-Agosto), predominan los sistemas frontales polares antárticos con bajas temperaturas y nevadas frecuentes en Cerro Catedral y cerros andinos, ideales para esquí y turismo invernal.'
   },
   {
+    id: 'villa_la_angostura',
+    name: 'Villa La Angostura',
+    detectedZone: 'Patagonia Andina (Parque Nacional Nahuel Huapi)',
+    country: 'Argentina',
+    stateOrProvince: 'Neuquén',
+    coords: [-40.7614, -71.6444],
+    aliases: ['villa la angostura', 'angostura', 'cerro bayo'],
+    popular: true,
+    tag: 'Lagos & Bosque de Arrayanes'
+  },
+  {
+    id: 'san_martin_de_los_andes',
+    name: 'San Martín de los Andes',
+    detectedZone: 'Patagonia Andina (Parque Nacional Lanín)',
+    country: 'Argentina',
+    stateOrProvince: 'Neuquén',
+    coords: [-40.1583, -71.3533],
+    aliases: ['san martin de los andes', 'san martín de los andes', 'cerro chapelco'],
+    popular: true,
+    tag: 'Lagos, Chapelco & 7 Lagos'
+  },
+  {
+    id: 'el_bolson',
+    name: 'El Bolsón',
+    detectedZone: 'Comarca Andina del Paralelo 42 (Patagonia)',
+    country: 'Argentina',
+    stateOrProvince: 'Río Negro',
+    coords: [-41.9667, -71.5333],
+    aliases: ['el bolson', 'el bolsón', 'lago puelo'],
+    popular: false,
+    tag: 'Lúpulo, Montaña & Ferias'
+  },
+  {
     id: 'el_calafate',
-    name: 'El Calafate / Glaciar Perito Moreno',
+    name: 'El Calafate',
     detectedZone: 'Patagonia Austral y Parque Nacional Los Glaciares',
     country: 'Argentina',
     stateOrProvince: 'Santa Cruz',
     coords: [-50.3378, -72.2648],
-    aliases: ['el calafate', 'calafate', 'glaciar perito moreno', 'el chalten', 'el chaltén', 'chalten'],
+    aliases: ['el calafate', 'calafate', 'glaciar perito moreno'],
     popular: true,
-    tag: 'Glaciares & Trekking',
+    tag: 'Glaciares & Navegación',
     neutralSeasonNoteDJF: 'Temporada alta de trekking. Mucha luz diurna (hasta las 22 hs), vientos patagónicos intensos y temperaturas templadas de día (15-20°C). Se rige por los vientos del oeste y el campo de hielo.',
     neutralSeasonNoteJJA: 'Invierno patagónico: muy frío, días cortos, heladas y nieve en estepa. Servicios reducidos pero paisajes vírgenes congelados.'
   },
   {
+    id: 'el_chalten',
+    name: 'El Chaltén',
+    detectedZone: 'Capital Nacional del Trekking (Patagonia)',
+    country: 'Argentina',
+    stateOrProvince: 'Santa Cruz',
+    coords: [-49.3314, -72.8864],
+    aliases: ['el chalten', 'el chaltén', 'fitz roy'],
+    popular: true,
+    tag: 'Trekking & Fitz Roy'
+  },
+  {
     id: 'ushuaia',
-    name: 'Ushuaia (Fin del Mundo)',
+    name: 'Ushuaia',
     detectedZone: 'Tierra del Fuego y Canal Beagle',
     country: 'Argentina',
     stateOrProvince: 'Tierra del Fuego',
     coords: [-54.8019, -68.3030],
-    aliases: ['ushuaia', 'fin del mundo', 'tierra del fuego', 'canal beagle', 'cerro castor'],
+    aliases: ['ushuaia', 'fin del mundo', 'cerro castor'],
     popular: true,
     tag: 'Fin del Mundo & Esquí',
     neutralSeasonNoteDJF: 'Verano fueguino: clima oceánico subpolar, días muy extensos de casi 18 horas de luz, temperaturas suaves (10-14°C) con cambios meteorológicos rápidos.',
@@ -203,7 +555,7 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Mendoza',
     coords: [-32.8895, -68.8458],
-    aliases: ['mendoza', 'valle de uco', 'san rafael', 'potrerillos', 'aconcagua', 'san juan', 'cuyo'],
+    aliases: ['mendoza', 'valle de uco', 'san rafael', 'cuyo'],
     popular: true,
     tag: 'Vinos & Precordillera',
     neutralSeasonNoteDJF: 'Verano cuyano: caluroso y semiárido, con fuerte radiación solar. Hacia la tarde/noche pueden darse tormentas orográficas convectivas aisladas, a menudo con granizo.',
@@ -216,212 +568,48 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Argentina',
     stateOrProvince: 'Córdoba',
     coords: [-31.4208, -64.4992],
-    aliases: ['villa carlos paz', 'carlos paz', 'cordoba', 'córdoba', 'villa general belgrano', 'la cumbrecita', 'mina clavero', 'calamuchita', 'traslasierra', 'sierras'],
+    aliases: ['villa carlos paz', 'carlos paz', 'cordoba', 'córdoba', 'villa general belgrano', 'la cumbrecita', 'mina clavero', 'calamuchita', 'traslasierra'],
     popular: true,
     tag: 'Sierras, Ríos & Festivales',
     neutralSeasonNoteDJF: 'Verano serrano clásico: calor diurno, balnearios de río colmados y episodios de tormentas orográficas que provocan repentinas crecidas en ríos serranos.',
     neutralSeasonNoteJJA: 'Invierno seco, cielo azul diáfano, días templados al sol y noches frías con heladas ocasionales.'
   },
   {
-    id: 'salta_jujuy',
-    name: 'Salta y Jujuy (NOA / Quebrada)',
-    detectedZone: 'Noroeste Argentino (NOA y Quebrada de Humahuaca)',
+    id: 'iguazu',
+    name: 'Cataratas del Iguazú / Puerto Iguazú',
+    detectedZone: 'Litoral y Selva Misionera (Cuenca del Plata)',
     country: 'Argentina',
-    stateOrProvince: 'Salta / Jujuy',
-    coords: [-24.7821, -65.4232],
-    aliases: ['salta', 'jujuy', 'purmamarca', 'tilcara', 'humahuaca', 'cafayate', 'cachi', 'noa', 'quebrada'],
+    stateOrProvince: 'Misiones',
+    coords: [-25.5976, -54.5779],
+    aliases: ['iguazu', 'iguazú', 'cataratas', 'puerto iguazu'],
     popular: true,
-    tag: 'Historia, Paisajes & Folclore',
-    neutralSeasonNoteDJF: 'Época estival de lluvias en el NOA: temporada en que se concentran las precipitaciones anuales, con posibles cortes temporales en caminos de montaña por aluviones.',
-    neutralSeasonNoteJJA: 'Temporada seca y óptima para recorrer el NOA: cielos 100% despejados, sol radiante de día y frío intenso de noche en la Puna y Quebrada.'
+    tag: 'Naturaleza & Maravilla del Mundo'
   },
 
   // ==========================================
-  // BRASIL (Litoral Sur, Sudeste, Nordeste)
-  // ==========================================
-  {
-    id: 'florianopolis',
-    name: 'Florianópolis (Floripa / Santa Catarina)',
-    detectedZone: 'Sur de Brasil (Costa de Santa Catarina)',
-    country: 'Brasil',
-    stateOrProvince: 'Santa Catarina',
-    coords: [-27.5954, -48.5480],
-    aliases: ['florianopolis', 'florianópolis', 'floripa', 'camboriu', 'camboriú', 'balneario camboriu', 'bombinhas', 'garopaba', 'praia do rosa', 'itapema', 'porto belo', 'santa catarina'],
-    popular: true,
-    tag: 'Playas, Surf & Vida Nocturna'
-  },
-  {
-    id: 'rio_de_janeiro',
-    name: 'Río de Janeiro',
-    detectedZone: 'Sudeste de Brasil (Costa Carioca)',
-    country: 'Brasil',
-    stateOrProvince: 'Rio de Janeiro',
-    coords: [-22.9068, -43.1729],
-    aliases: ['rio de janeiro', 'río de janeiro', 'rio', 'buzios', 'búzios', 'arraial do cabo', 'cabo frio', 'angra dos reis', 'ilha grande', 'paraty'],
-    popular: true,
-    tag: 'Playas Icónicas & Fiesta'
-  },
-  {
-    id: 'salvador_bahia',
-    name: 'Salvador de Bahía / Porto Seguro',
-    detectedZone: 'Nordeste de Brasil (Litoral de Bahía)',
-    country: 'Brasil',
-    stateOrProvince: 'Bahia',
-    coords: [-12.9777, -38.5016],
-    aliases: ['salvador de bahia', 'salvador', 'bahia', 'bahía', 'porto seguro', 'trancoso', 'arraial dajuda', 'morro de sao paulo', 'morro de são paulo', 'praia do forte'],
-    popular: true,
-    tag: 'Cultura Afro-Brasileña & Playa'
-  },
-  {
-    id: 'fortaleza_ceara',
-    name: 'Fortaleza / Jericoacoara (Ceará)',
-    detectedZone: 'Norte y Nordeste Septentrional de Brasil',
-    country: 'Brasil',
-    stateOrProvince: 'Ceará',
-    coords: [-3.7319, -38.5267],
-    aliases: ['fortaleza', 'jericoacoara', 'jeri', 'canoa quebrada', 'ceara', 'ceará', 'natal', 'pipa'],
-    popular: true,
-    tag: 'Dunas, Viento & Kitesurf'
-  },
-  {
-    id: 'recife_maceio',
-    name: 'Maceió / Recife / Porto de Galinhas',
-    detectedZone: 'Nordeste Oriental de Brasil (Piscinas Naturales)',
-    country: 'Brasil',
-    stateOrProvince: 'Alagoas / Pernambuco',
-    coords: [-9.6658, -35.7351],
-    aliases: ['maceio', 'maceió', 'maragogi', 'recife', 'porto de galinhas', 'alagoas', 'pernambuco'],
-    popular: true,
-    tag: 'Playas Turquesa & Arrecifes'
-  },
-
-  // ==========================================
-  // URUGUAY
-  // ==========================================
-  {
-    id: 'punta_del_este',
-    name: 'Punta del Este / José Ignacio',
-    detectedZone: 'Costa de Uruguay (Atlántico y Río de la Plata)',
-    country: 'Uruguay',
-    stateOrProvince: 'Maldonado',
-    coords: [-34.9667, -54.9500],
-    aliases: ['punta del este', 'punta', 'jose ignacio', 'josé ignacio', 'la barra', 'maldonado', 'piriapolis', 'piriápolis'],
-    popular: true,
-    tag: 'Playa Exclusiva & Gastronomía'
-  },
-  {
-    id: 'montevideo',
-    name: 'Montevideo / Colonia del Sacramento',
-    detectedZone: 'Costa de Uruguay y Río de la Plata',
-    country: 'Uruguay',
-    stateOrProvince: 'Montevideo / Colonia',
-    coords: [-34.9011, -56.1645],
-    aliases: ['montevideo', 'colonia', 'colonia del sacramento', 'rocha', 'la paloma', 'cabo polonio', 'punta del diablo'],
-    popular: false,
-    tag: 'Historia, Rambla & Playas'
-  },
-
-  // ==========================================
-  // CHILE
-  // ==========================================
-  {
-    id: 'santiago_chile',
-    name: 'Santiago / Valparaíso / Viña del Mar',
-    detectedZone: 'Chile Central y Costa del Pacífico',
-    country: 'Chile',
-    stateOrProvince: 'Región Metropolitana / Valparaíso',
-    coords: [-33.4489, -70.6693],
-    aliases: ['santiago', 'santiago de chile', 'valparaiso', 'valparaíso', 'vina del mar', 'viña del mar', 'valle nevado', 'portillo', 'la parva', 'farellones'],
-    popular: true,
-    tag: 'Esquí en Invierno & Costa'
-  },
-  {
-    id: 'atacama',
-    name: 'San Pedro de Atacama',
-    detectedZone: 'Desierto de Atacama (Norte de Chile)',
-    country: 'Chile',
-    stateOrProvince: 'Antofagasta',
-    coords: [-22.9087, -68.1997],
-    aliases: ['san pedro de atacama', 'atacama', 'valle de la luna'],
-    popular: false,
-    tag: 'Desierto, Salares & Astronomía'
-  },
-
-  // ==========================================
-  // PERÚ & ECUADOR
-  // ==========================================
-  {
-    id: 'lima_peru',
-    name: 'Lima / Costa de Perú',
-    detectedZone: 'Costa Central de Perú',
-    country: 'Perú',
-    stateOrProvince: 'Lima',
-    coords: [-12.0464, -77.0428],
-    aliases: ['lima', 'miraflores', 'peru', 'perú', 'paracas', 'trujillo', 'mancora', 'máncora'],
-    popular: true,
-    tag: 'Gastronomía de Clase Mundial'
-  },
-  {
-    id: 'cusco_machu_picchu',
-    name: 'Cusco / Machu Picchu',
-    detectedZone: 'Andes del Sur de Perú',
-    country: 'Perú',
-    stateOrProvince: 'Cusco',
-    coords: [-13.5319, -71.9675],
-    aliases: ['cusco', 'cuzco', 'machu picchu', 'valle sagrado'],
-    popular: true,
-    tag: 'Arqueología & Cultura Inca'
-  },
-
-  // ==========================================
-  // CARIBE & MÉXICO & CENTROAMÉRICA
+  // CARIBE, CENTROAMÉRICA & NORTEAMÉRICA
   // ==========================================
   {
     id: 'cancun',
-    name: 'Cancún / Riviera Maya (Tulum / Playa del Carmen)',
+    name: 'Cancún / Riviera Maya',
     detectedZone: 'Caribe Mexicano (Península de Yucatán)',
     country: 'México',
     stateOrProvince: 'Quintana Roo',
     coords: [21.1619, -86.8515],
-    aliases: ['cancun', 'cancún', 'playa del carmen', 'tulum', 'riviera maya', 'cozumel', 'isla mujeres', 'bacalar', 'caribe'],
+    aliases: ['cancun', 'cancún', 'playa del carmen', 'tulum', 'riviera maya', 'cozumel'],
     popular: true,
     tag: 'Playas Turquesa, Cenotes & Ruinas'
   },
   {
     id: 'punta_cana',
-    name: 'Punta Cana / Santo Domingo',
+    name: 'Punta Cana',
     detectedZone: 'República Dominicana (Caribe Insular)',
     country: 'República Dominicana',
     coords: [18.5601, -68.3725],
-    aliases: ['punta cana', 'bavaro', 'bayahibe', 'samana', 'santo domingo', 'republica dominicana'],
+    aliases: ['punta cana', 'bavaro', 'bayahibe'],
     popular: true,
     tag: 'All Inclusive & Playas de Palma'
   },
-  {
-    id: 'cartagena',
-    name: 'Cartagena de Indias / San Andrés',
-    detectedZone: 'Caribe Colombiano',
-    country: 'Colombia',
-    stateOrProvince: 'Bolívar / San Andrés',
-    coords: [10.3910, -75.4794],
-    aliases: ['cartagena', 'cartagena de indias', 'san andres', 'san andrés', 'santa marta', 'parque tayrona'],
-    popular: true,
-    tag: 'Ciudad Amurallada & Islas'
-  },
-  {
-    id: 'costa_rica',
-    name: 'Costa Rica (Manuel Antonio / Guanacaste)',
-    detectedZone: 'América Central y Playas del Pacífico/Caribe',
-    country: 'Costa Rica',
-    coords: [9.9281, -84.0907],
-    aliases: ['costa rica', 'manuel antonio', 'guanacaste', 'tamarindo', 'san jose', 'arenal'],
-    popular: true,
-    tag: 'Pura Vida & Biodiversidad'
-  },
-
-  // ==========================================
-  // ESTADOS UNIDOS
-  // ==========================================
   {
     id: 'miami',
     name: 'Miami / Orlando (Florida)',
@@ -429,132 +617,18 @@ export const CURATED_DESTINATIONS: DestinationInfo[] = [
     country: 'Estados Unidos',
     stateOrProvince: 'Florida',
     coords: [25.7617, -80.1918],
-    aliases: ['miami', 'orlando', 'disney', 'fort lauderdale', 'key west', 'cayo hueso', 'florida', 'tampa'],
+    aliases: ['miami', 'orlando', 'florida', 'fort lauderdale'],
     popular: true,
     tag: 'Parques Temáticos & Playas'
   },
   {
-    id: 'california',
-    name: 'Los Ángeles / San Diego (California)',
-    detectedZone: 'Costa de California (Costa Oeste de EE. UU.)',
-    country: 'Estados Unidos',
-    stateOrProvince: 'California',
-    coords: [34.0522, -118.2437],
-    aliases: ['los angeles', 'los ángeles', 'san diego', 'california', 'san francisco'],
-    popular: true,
-    tag: 'Costa del Pacífico & Cine'
-  },
-  {
-    id: 'new_york',
-    name: 'Nueva York',
-    detectedZone: 'Noreste de EE. UU. (Costa Este)',
-    country: 'Estados Unidos',
-    stateOrProvince: 'New York',
-    coords: [40.7128, -74.0060],
-    aliases: ['nueva york', 'new york', 'nyc', 'manhattan'],
-    popular: true,
-    tag: 'Gran Metrópolis'
-  },
-
-  // ==========================================
-  // ASIA & OCEANÍA
-  // ==========================================
-  {
     id: 'bali',
-    name: 'Bali / Indonesia',
+    name: 'Bali',
     detectedZone: 'Archipiélago de Indonesia y Sonda',
     country: 'Indonesia',
     coords: [-8.3405, 115.0920],
-    aliases: ['bali', 'indonesia', 'ubud', 'seminyak', 'canggu', 'kuta', 'lombok', 'gili'],
+    aliases: ['bali', 'ubud', 'seminyak', 'canggu'],
     popular: true,
     tag: 'Templos, Arrozales & Playas'
-  },
-  {
-    id: 'bangkok_phuket',
-    name: 'Phuket / Bangkok (Tailandia)',
-    detectedZone: 'Sudeste Asiático Continental',
-    country: 'Tailandia',
-    coords: [7.8804, 98.3923],
-    aliases: ['phuket', 'bangkok', 'tailandia', 'koh samui', 'krabi', 'chiang mai'],
-    popular: true,
-    tag: 'Islas Exóticas & Templos'
-  },
-  {
-    id: 'sydney',
-    name: 'Sídney / Melbourne (Australia)',
-    detectedZone: 'Sudeste de Australia',
-    country: 'Australia',
-    coords: [-33.8688, 151.2093],
-    aliases: ['sydney', 'sídney', 'melbourne', 'brisbane', 'gold coast', 'australia'],
-    popular: true,
-    tag: 'Playas, Ópera & Naturaleza'
-  },
-  {
-    id: 'queenstown',
-    name: 'Queenstown / Nueva Zelanda',
-    detectedZone: 'Sudoeste del Pacífico (Nueva Zelanda)',
-    country: 'Nueva Zelanda',
-    coords: [-45.0312, 168.6626],
-    aliases: ['queenstown', 'auckland', 'nueva zelanda', 'new zealand'],
-    popular: false,
-    tag: 'Aventura, Lagos & Nieve'
-  },
-
-  // ==========================================
-  // EUROPA
-  // ==========================================
-  {
-    id: 'madrid_barcelona',
-    name: 'Madrid / Barcelona / Costa del Sol (España)',
-    detectedZone: 'Península Ibérica y Mediterráneo Europeo',
-    country: 'España',
-    coords: [40.4168, -3.7038],
-    aliases: ['madrid', 'barcelona', 'ibiza', 'mallorca', 'costa del sol', 'sevilla', 'valencia', 'espana', 'españa'],
-    popular: true,
-    tag: 'Cultura, Tapas & Mediterráneo'
-  },
-  {
-    id: 'roma_italia',
-    name: 'Roma / Costa Amalfitana (Italia)',
-    detectedZone: 'Península Itálica y Mediterráneo Central',
-    country: 'Italia',
-    coords: [41.9028, 12.4964],
-    aliases: ['roma', 'italia', 'florencia', 'venecia', 'costa amalfitana', 'milan', 'milán', 'sicilia'],
-    popular: true,
-    tag: 'Historia Clásica & Arte'
-  },
-  {
-    id: 'paris',
-    name: 'París (Francia)',
-    detectedZone: 'Europa Occidental Continental',
-    country: 'Francia',
-    coords: [48.8566, 2.3522],
-    aliases: ['paris', 'parís', 'francia', 'costa azul', 'niza'],
-    popular: true,
-    tag: 'Ciudad Luz, Museos & Romance'
-  },
-
-  // ==========================================
-  // ÁFRICA
-  // ==========================================
-  {
-    id: 'cape_town',
-    name: 'Ciudad del Cabo / Safari Kruger (Sudáfrica)',
-    detectedZone: 'África Austral',
-    country: 'Sudáfrica',
-    coords: [-33.9249, 18.4241],
-    aliases: ['ciudad del cabo', 'cape town', 'johannesburgo', 'sudafrica', 'sudáfrica', 'kruger', 'cataratas victoria'],
-    popular: true,
-    tag: 'Safaris & Rutas Escénicas'
-  },
-  {
-    id: 'zanzibar_kenya',
-    name: 'Zanzíbar / Serengeti (Tanzania & Kenia)',
-    detectedZone: 'África Oriental y Llanuras del Serengeti',
-    country: 'Tanzania / Kenia',
-    coords: [-6.1659, 39.2026],
-    aliases: ['zanzibar', 'zanzíbar', 'kenia', 'kenya', 'nairobi', 'tanzania', 'serengeti', 'kilimanjaro'],
-    popular: false,
-    tag: 'Playas Índicas & Gran Migración'
   }
 ];

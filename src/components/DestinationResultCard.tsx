@@ -15,15 +15,25 @@ import {
   Info,
   FileDown
 } from 'lucide-react';
+import { WatchDestinationButton } from './WatchDestinationButton';
 
 interface DestinationResultCardProps {
   result: LocationResolutionResult;
   season: SeasonKey;
   onToggleSeason: () => void;
   onOpenExportPdf: () => void;
+  isWatched?: boolean;
+  onToggleWatch?: () => void;
 }
 
-export function DestinationResultCard({ result, season, onToggleSeason, onOpenExportPdf }: DestinationResultCardProps) {
+export function DestinationResultCard({ 
+  result, 
+  season, 
+  onToggleSeason, 
+  onOpenExportPdf,
+  isWatched = false,
+  onToggleWatch
+}: DestinationResultCardProps) {
   const isWet = result.category.includes('Wet');
   const isWarm = result.category.includes('Warm');
   const isDry = result.category.includes('Dry');
@@ -90,8 +100,19 @@ export function DestinationResultCard({ result, season, onToggleSeason, onOpenEx
           </div>
         </div>
 
-        {/* Action Buttons: Season Flip + Export PDF */}
+        {/* Action Buttons: Watch Dest + Season Flip + Export PDF */}
         <div className="shrink-0 flex items-center gap-2 flex-wrap">
+          {onToggleWatch && (
+            <WatchDestinationButton
+              destinationName={result.matchedName}
+              zone={result.detectedZone}
+              country={result.country}
+              coords={result.coords}
+              isWatched={isWatched}
+              onToggleWatch={onToggleWatch}
+            />
+          )}
+
           <button
             onClick={onToggleSeason}
             className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 transition-colors cursor-pointer shadow-xs"

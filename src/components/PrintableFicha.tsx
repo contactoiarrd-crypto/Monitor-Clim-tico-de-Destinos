@@ -13,7 +13,8 @@ import {
   Wind, 
   ShieldCheck, 
   PhoneCall, 
-  AlertTriangle 
+  AlertTriangle,
+  Globe
 } from 'lucide-react';
 
 interface PrintableFichaProps {
@@ -42,18 +43,22 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
         className="bg-white text-slate-800 p-8 sm:p-10 rounded-2xl max-w-[800px] mx-auto shadow-none border border-slate-200 font-sans"
         style={{ width: '100%', boxSizing: 'border-box' }}
       >
-        {/* Header Institucional */}
-        <div className="flex items-start justify-between pb-6 border-b-2 border-sky-900 gap-4">
+        {/* Header Institucional con alertatemprana.online */}
+        <div className="flex items-start justify-between pb-5 border-b-2 border-sky-900 gap-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-sky-900 flex items-center justify-center text-white shrink-0">
               <Waves className="w-7 h-7 text-sky-200" />
             </div>
             <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-sky-700 uppercase tracking-wider">
+                <Globe className="w-3.5 h-3.5" />
+                <span>alertatemprana.online</span>
+              </div>
               <h1 className="text-xl font-extrabold text-sky-950 uppercase tracking-tight">
-                Ficha Técnica de Destino Turístico
+                Ficha Técnica de Destino y Alerta Temprana
               </h1>
               <p className="text-xs font-semibold text-slate-500">
-                Monitor Climático IIARRD • Base NOAA Climate.gov
+                Monitor Climático de Destinos • IIARRD & NOAA Climate.gov
               </p>
             </div>
           </div>
@@ -64,7 +69,7 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
         </div>
 
         {/* Destino y Zona Detectada */}
-        <div className="mt-6 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+        <div className="mt-5 bg-slate-50 p-5 rounded-2xl border border-slate-200">
           <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-sky-700 bg-sky-100 px-2.5 py-0.5 rounded-full">
               Destino Analizado
@@ -95,69 +100,36 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
           </div>
         </div>
 
-        {/* Sección NOAA: El Niño */}
-        <div className="mt-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Proyección de El Niño (NOAA Climate.gov)
-            </span>
-          </div>
-
-          <div 
-            className="p-5 rounded-2xl border-l-8"
-            style={{ 
-              backgroundColor: result.bgLightHex, 
-              borderColor: result.colorHex,
-              borderWidth: '1px 1px 1px 8px'
-            }}
-          >
-            <div className="flex items-center gap-2 font-bold text-base text-slate-900 mb-1">
-              <span>{result.icon}</span>
-              <span>Patrón: {result.categoryLabel}</span>
-            </div>
-            <div className="font-semibold text-sm text-slate-800 mb-2">
-              {result.prognosisSummary}
-            </div>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              {result.detailedImpact}
-            </p>
-          </div>
-        </div>
-
-        {/* Recomendaciones y Valija */}
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="bg-amber-50/80 p-4 rounded-xl border border-amber-200 text-xs">
-            <div className="flex items-center gap-1.5 font-bold text-amber-900 mb-1.5">
-              <Lightbulb className="w-4 h-4 text-amber-600" />
-              <span>Recomendaciones Turísticas</span>
-            </div>
-            <p className="text-amber-950 leading-relaxed text-[11px]">
-              {result.touristAdvice}
-            </p>
-          </div>
-
-          <div className="bg-indigo-50/80 p-4 rounded-xl border border-indigo-200 text-xs">
-            <div className="flex items-center gap-1.5 font-bold text-indigo-900 mb-1.5">
-              <Luggage className="w-4 h-4 text-indigo-600" />
-              <span>Qué Llevar en la Valija</span>
-            </div>
-            <p className="text-indigo-950 leading-relaxed text-[11px]">
-              {result.packingAdvice}
-            </p>
-          </div>
-        </div>
-
-        {/* Monitor Táctico en Tiempo Real si existe */}
+        {/* 1. SECCIÓN PRINCIPAL: ALERTAS VIVAS Y CONDICIONES TÁCTICAS (PRIMERO) */}
         {weather && (
-          <div className="mt-6 border-t pt-5 border-slate-200">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-              Condiciones Tácticas en Tiempo Real (Open-Meteo & IIARRD)
+          <div className="mt-5">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-sky-700" />
+              <span>1. Alertas Vivas y Condiciones Tácticas (Open-Meteo & IIARRD)</span>
             </h3>
 
-            {/* Live Weather & Fire Index */}
+            {/* Alertas Activas en Destacado */}
+            {(weather.alerts.severoOficial || weather.alerts.eventoCrisis48h || weather.alerts.olaCalor || weather.alerts.olaPolar) ? (
+              <div className="bg-red-50 border-l-4 border-red-600 p-3.5 rounded-xl text-xs text-red-950 mb-3 font-medium">
+                <div className="flex items-center gap-1 font-bold text-red-900 mb-1">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+                  <span>ALERTAS VIVAS EN EL DESTINO:</span>
+                </div>
+                {weather.alerts.severoOficial && <div>• Aviso Oficial: Tiempo severo o vientos superiores a 50 km/h.</div>}
+                {weather.alerts.eventoCrisis48h && <div>• {weather.alerts.eventoCrisis48h}</div>}
+                {weather.alerts.olaCalor && <div>• Ola de Calor: Temperatura extrema &gt;= 35°C.</div>}
+                {weather.alerts.olaPolar && <div>• Ola Polar: Temperatura crítica &lt;= 5°C.</div>}
+              </div>
+            ) : (
+              <div className="bg-emerald-50 border-l-4 border-emerald-600 p-2.5 rounded-xl text-xs text-emerald-950 mb-3 font-semibold">
+                ✓ No se registran alertas hidrometeorológicas críticas ni sismos severos recientes en la zona.
+              </div>
+            )}
+
+            {/* Grid Clima Actual & Índice 30-30-30 */}
             <div className="grid grid-cols-3 gap-3 text-center mb-3">
               <div className="bg-slate-900 text-white p-3 rounded-xl">
-                <div className="text-[10px] text-sky-300 font-bold uppercase">Temperatura</div>
+                <div className="text-[10px] text-sky-300 font-bold uppercase">Tiempo Actual</div>
                 <div className="text-2xl font-black">{weather.current.temp}°C</div>
                 <div className="text-[10px] text-slate-300">{weather.current.conditionText}</div>
               </div>
@@ -181,34 +153,70 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
               </div>
             </div>
 
-            {/* Alertas */}
-            {(weather.alerts.severoOficial || weather.alerts.eventoCrisis48h || weather.alerts.olaCalor || weather.alerts.olaPolar) && (
-              <div className="bg-red-50 border border-red-200 p-3 rounded-xl text-xs text-red-950 mb-3 font-medium">
-                <div className="flex items-center gap-1 font-bold text-red-900 mb-0.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-                  <span>Alertas Activas:</span>
-                </div>
-                {weather.alerts.severoOficial && <div>• Aviso Oficial de tiempo severo detectado.</div>}
-                {weather.alerts.eventoCrisis48h && <div>• {weather.alerts.eventoCrisis48h}</div>}
-                {weather.alerts.olaCalor && <div>• Ola de Calor: temperatura sobre 35°C.</div>}
-                {weather.alerts.olaPolar && <div>• Ola Polar: temperaturas menores a 5°C.</div>}
-              </div>
-            )}
-
             {/* Planificación 7 Días */}
-            <div className="bg-sky-50 border border-sky-200 p-3 rounded-xl text-[11px] text-sky-950 leading-relaxed mb-3">
+            <div className="bg-sky-50 border border-sky-200 p-3 rounded-xl text-[11px] text-sky-950 leading-relaxed">
               <strong className="block text-sky-900 font-bold mb-0.5">Planificación Táctica a 7 Días:</strong>
               {weather.narrativa7Dias}
             </div>
           </div>
         )}
 
+        {/* 2. SECCIÓN: PROYECCIÓN EL NIÑO (NOAA CLIMATE.GOV) */}
+        <div className="mt-5 border-t pt-4 border-slate-200">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center gap-1.5">
+            <span>2. Proyección Climática de El Niño ({seasonLabel}) — NOAA</span>
+          </h3>
+
+          <div 
+            className="p-4 rounded-2xl border-l-8"
+            style={{ 
+              backgroundColor: result.bgLightHex, 
+              borderColor: result.colorHex,
+              borderWidth: '1px 1px 1px 8px'
+            }}
+          >
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 mb-1">
+              <span>{result.icon}</span>
+              <span>Patrón Esperado: {result.categoryLabel}</span>
+            </div>
+            <div className="font-semibold text-xs text-slate-800 mb-1.5">
+              {result.prognosisSummary}
+            </div>
+            <p className="text-[11px] text-slate-700 leading-relaxed">
+              {result.detailedImpact}
+            </p>
+          </div>
+
+          {/* Recomendaciones y Valija */}
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="bg-amber-50/80 p-3 rounded-xl border border-amber-200 text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900 mb-1">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
+                <span>Recomendaciones Turísticas</span>
+              </div>
+              <p className="text-amber-950 leading-relaxed text-[10px]">
+                {result.touristAdvice}
+              </p>
+            </div>
+
+            <div className="bg-indigo-50/80 p-3 rounded-xl border border-indigo-200 text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-indigo-900 mb-1">
+                <Luggage className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Qué Llevar en la Valija</span>
+              </div>
+              <p className="text-indigo-950 leading-relaxed text-[10px]">
+                {result.packingAdvice}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Emergencias y Kit IIARRD */}
-        <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 text-xs">
+        <div className="mt-5 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 text-xs">
           <div className="bg-slate-100 p-3 rounded-xl">
             <div className="flex items-center gap-1 font-bold text-slate-900 mb-1">
               <PhoneCall className="w-3.5 h-3.5 text-sky-600" />
-              <span>Central de Emergencias</span>
+              <span>Central de Emergencias Locales</span>
             </div>
             <div className="text-lg font-black text-sky-900">
               {weather?.emergencia.telefono || '911 / 103'}
@@ -221,7 +229,7 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
           <div className="bg-slate-100 p-3 rounded-xl">
             <div className="flex items-center gap-1 font-bold text-slate-900 mb-1">
               <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
-              <span>Kit Básico IIARRD</span>
+              <span>Kit de Emergencia IIARRD</span>
             </div>
             <div className="text-[10px] text-slate-600 grid grid-cols-2 gap-1">
               <span>💧 Agua (2L/p)</span>
@@ -232,9 +240,10 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400">
-          Documento para planificación y gestión de riesgo turístico • Fuentes: NOAA Climate.gov, Open-Meteo, USGS, IIARRD.
+        {/* Footer con alertatemprana.online */}
+        <div className="mt-5 pt-3 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-400">
+          <span>Emitido desde <strong>alertatemprana.online</strong> • Gestión Integral del Riesgo Climático</span>
+          <span>Fuentes: NOAA Climate.gov, Open-Meteo, USGS, IIARRD.</span>
         </div>
       </div>
     );
