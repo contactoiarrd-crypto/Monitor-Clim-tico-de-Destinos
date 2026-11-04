@@ -39,14 +39,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "share_target": {
-    "method": "GET",
-    "action": "https://contactoiarrd-crypto.github.io/Monitor-Clim-tico-de-Destinos/",
-    "params": {
-      "title": "Monitor Climatico de Destinos",
-      "text": "Monitor Climatico de Destinos",
-      "url": "https://contactoiarrd-crypto.github.io/Monitor-Clim-tico-de-Destinos/"
-    }
-  }
+  ]
 }
