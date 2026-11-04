@@ -46,9 +46,12 @@ export const PrintableFicha = React.forwardRef<HTMLDivElement, PrintableFichaPro
         {/* Header Institucional con alertatemprana.online */}
         <div className="flex items-start justify-between pb-5 border-b-2 border-sky-900 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-sky-900 flex items-center justify-center text-white shrink-0">
-              <Waves className="w-7 h-7 text-sky-200" />
-            </div>
+            <img 
+              src="/assets/aistudio/fotor_2023-5-17_15_36_9-removebg-preview__8__01d6ec0e.png"
+              alt="IIARRD"
+              className="h-10 w-auto object-contain shrink-0"
+            />
+            <div className="h-9 w-px bg-slate-300 shrink-0" />
             <div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-sky-700 uppercase tracking-wider">
                 <Globe className="w-3.5 h-3.5" />

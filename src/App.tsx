@@ -68,6 +68,8 @@ import { EmbedWidgetModal } from './components/EmbedWidgetModal';
 import { NotificationSettingsModal } from './components/NotificationSettingsModal';
 import { NotificationToastBanner } from './components/NotificationToastBanner';
 import { WatchDestinationButton } from './components/WatchDestinationButton';
+import { PWAInstallButton } from './components/PWAInstallButton';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 type ViewMode = 'all' | 'tactical' | 'nino';
 
@@ -414,9 +416,29 @@ export default function App() {
         <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-700 via-sky-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-sky-600/20">
-                <Waves className="w-6 h-6" />
-              </div>
+              <a
+                href="https://alertatemprana.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
+                title="IIARRD - Instituto InterAmericano para la Reducción de Riesgo de Desastres"
+              >
+                <img
+                  src="/assets/aistudio/fotor_2023-5-17_15_36_9-removebg-preview__8__01d6ec0e.png"
+                  alt="Logo IIARRD - Instituto InterAmericano para la Reducción de Riesgo de Desastres"
+                  className="h-8 sm:h-11 w-auto max-w-[125px] sm:max-w-[175px] object-contain drop-shadow-2xs"
+                  loading="eager"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('./assets/')) {
+                      target.src = './assets/aistudio/fotor_2023-5-17_15_36_9-removebg-preview__8__01d6ec0e.png';
+                    }
+                  }}
+                />
+              </a>
+
+              <div className="h-8 w-px bg-slate-200 hidden sm:block shrink-0" />
+
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-extrabold text-base sm:text-lg text-slate-900 leading-tight tracking-tight">
@@ -506,6 +528,9 @@ export default function App() {
                 )}
               </button>
 
+              {/* Botón Descargar App en Navbar */}
+              <PWAInstallButton variant="navbar" />
+
               {/* Botón Integrar en Web */}
               <button
                 onClick={() => setIsEmbedModalOpen(true)}
@@ -535,6 +560,13 @@ export default function App() {
       {/* Main Content Area */}
       <main className={`max-w-6xl mx-auto px-4 py-6 md:py-8 flex-1 w-full space-y-6 md:space-y-8 ${urlEmbed ? 'p-2' : ''}`}>
         
+        {/* Banner de instalación PWA en dispositivos móviles */}
+        {!urlEmbed && (
+          <div className="max-w-3xl mx-auto">
+            <PWAInstallButton variant="banner" />
+          </div>
+        )}
+
         {/* Search Bar Container */}
         <div ref={searchContainerRef} className="max-w-3xl mx-auto relative">
           <form onSubmit={handleFormSubmit} className="relative flex items-center shadow-lg rounded-2xl">
@@ -963,6 +995,9 @@ export default function App() {
           executeSearch(destName, season);
         }}
       />
+
+      {/* Offline Status Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }
