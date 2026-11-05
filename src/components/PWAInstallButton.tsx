@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { DownloadApkModal } from './DownloadApkModal';
 import { 
   Download, 
   Smartphone, 
-  Share, 
-  PlusSquare, 
-  X, 
-  CheckCircle2, 
-  Sparkles,
-  ArrowRight,
-  ShieldCheck
+  CheckCircle2,
+  HelpCircle,
+  ExternalLink,
+  X,
+  ShieldCheck,
+  AlertCircle
 } from 'lucide-react';
 
 interface PWAInstallButtonProps {
@@ -21,196 +21,220 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
   className = '',
   variant = 'navbar'
 }) => {
-  const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
-  const [showGuideModal, setShowGuideModal] = useState(false);
+  const { isInstallable, isIOS, install } = usePWAInstall();
+  const [showModal, setShowModal] = useState(false);
+  const [showDownloadAlert, setShowDownloadAlert] = useState(false);
 
-  // If already installed or running as standalone PWA, hide install trigger
-  if (isInstalled) {
-    return null;
-  }
+  const apkDownloadUrl = './downloads/MonitorClimatico-IIARRD.apk';
+  const apkFileName = 'MonitorClimatico-IIARRD.apk';
 
-  const handleClick = async () => {
-    if (isInstallable) {
-      const installed = await install();
-      if (!installed) {
-        setShowGuideModal(true);
-      }
-    } else {
-      setShowGuideModal(true);
+  // Handle click on download link
+  const handleDownloadClick = () => {
+    setShowDownloadAlert(true);
+    // Programmatic trigger as extra safety
+    try {
+      const a = document.createElement('a');
+      a.href = apkDownloadUrl;
+      a.download = apkFileName;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch {
+      // Fallback handled by the native <a> link
     }
   };
 
   return (
     <>
+      {/* 1. Navbar: Direct APK Download Link */}
       {variant === 'navbar' && (
-        <button
-          type="button"
-          onClick={handleClick}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border ${
-            isInstallable
-              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-emerald-500 animate-pulse'
-              : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
-          } ${className}`}
-          title="Instalar aplicación en tu celular o computadora"
-        >
-          <Smartphone className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Descargar App</span>
-          <span className="sm:hidden">App</span>
-        </button>
-      )}
-
-      {variant === 'banner' && (
-        <div className="bg-gradient-to-r from-sky-900 via-sky-800 to-indigo-950 text-white p-3.5 sm:p-4 rounded-2xl shadow-md border border-sky-700 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
-              <Smartphone className="w-5 h-5 text-sky-300" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full">
-                  Instalable
-                </span>
-                <span className="text-xs font-semibold text-sky-200">Acceso rápido sin conexión</span>
-              </div>
-              <h4 className="text-sm font-bold text-white mt-0.5">
-                Instalá la app de Monitor Climático en tu dispositivo móvil
-              </h4>
-            </div>
-          </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <a
+            href={apkDownloadUrl}
+            download={apkFileName}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleDownloadClick}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-all cursor-pointer shadow-xs border bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-emerald-500 hover:shadow-md active:scale-95 ${className}`}
+            title="Descargar archivo APK directamente para instalar en tu celular"
+          >
+            <Download className="w-3.5 h-3.5 text-white" />
+            <span className="hidden sm:inline">Descargar APK</span>
+            <span className="sm:hidden font-extrabold">APK</span>
+          </a>
 
           <button
             type="button"
-            onClick={handleClick}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition-all shadow-md cursor-pointer shrink-0"
+            onClick={() => setShowModal(true)}
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            title="Instrucciones de instalación y opciones para iPhone / Android"
           >
-            <Download className="w-4 h-4" />
-            <span>Descargar Aplicación</span>
+            <HelpCircle className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
-      {/* Installation Guide Modal (iOS / Manual install) */}
-      {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden text-slate-800">
+      {/* 2. Banner: Prominent Card with Direct APK Download */}
+      {variant === 'banner' && (
+        <div className="bg-gradient-to-r from-sky-900 via-sky-800 to-indigo-950 text-white p-4 sm:p-5 rounded-2xl shadow-lg border border-sky-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 text-left">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
+              <Smartphone className="w-6 h-6 text-sky-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-400 text-slate-950 px-2.5 py-0.5 rounded-full shadow-2xs">
+                  APK Android Oficial
+                </span>
+                <span className="text-xs font-semibold text-sky-200">Versión 1.0.0</span>
+              </div>
+              <h4 className="text-base font-extrabold text-white mt-1">
+                Descargá la App de Monitor Climático (.apk)
+              </h4>
+              <p className="text-xs text-sky-100/90 hidden sm:block">
+                Instalá la app directamente en tu celular para recibir alertas vivas y funcionar sin conexión.
+              </p>
+            </div>
+          </div>
+
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+            <a
+              href={apkDownloadUrl}
+              download={apkFileName}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleDownloadClick}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs md:text-sm transition-all shadow-md cursor-pointer"
+              title="Descargar archivo MonitorClimatico-IIARRD.apk"
+            >
+              <Download className="w-4 h-4 stroke-[2.5]" />
+              <span>Descargar APK Directo</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="px-3 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors cursor-pointer text-center"
+              title="Ver instrucciones detalladas de instalación"
+            >
+              ¿Cómo instalar?
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Download Feedback Modal / Toast */}
+      {showDownloadAlert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="bg-gradient-to-r from-sky-800 to-indigo-900 text-white p-5 flex items-start justify-between">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-5 flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/20">
-                  <Smartphone className="w-5 h-5 text-sky-300" />
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
+                  <Download className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black leading-snug">
-                    Instalar en tu Dispositivo
+                  <h3 className="text-base sm:text-lg font-black text-white">
+                    ¡Descargando archivo APK!
                   </h3>
-                  <p className="text-xs text-sky-200">
-                    Monitor Climático de Destinos • IIARRD
+                  <p className="text-xs text-emerald-100">
+                    MonitorClimatico-IIARRD.apk (6.9 MB)
                   </p>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setShowGuideModal(false)}
-                className="p-1 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                onClick={() => setShowDownloadAlert(false)}
+                className="p-1 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-4 text-sm">
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs font-semibold">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Aplicación ligera PWA: no ocupa espacio de tienda y funciona sin conexión.</span>
+            {/* Steps to Install */}
+            <div className="p-5 space-y-4 text-xs sm:text-sm">
+              <p className="text-slate-600 font-medium">
+                La descarga ha iniciado en tu navegador. Para instalar la aplicación en tu celular Android:
+              </p>
+
+              <div className="space-y-2 text-xs text-slate-700">
+                <div className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
+                    1
+                  </span>
+                  <div>
+                    Abrí la notificación de descarga de tu celular (o la carpeta <strong>Descargas</strong>).
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
+                    2
+                  </span>
+                  <div>
+                    Tocá el archivo <strong>MonitorClimatico-IIARRD.apk</strong>.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
+                    3
+                  </span>
+                  <div>
+                    Si el teléfono muestra un aviso de seguridad, tocá <strong>Ajustes</strong> y activá <strong>Permitir desde esta fuente</strong>, luego presioná <strong>Instalar</strong>.
+                  </div>
+                </div>
               </div>
 
-              {isIOS ? (
-                <div className="space-y-3">
-                  <p className="font-bold text-slate-900 text-sm">
-                    Pasos para iPhone o iPad (Safari):
-                  </p>
-                  <ol className="space-y-2.5 text-slate-700 text-xs">
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        1
-                      </span>
-                      <div>
-                        Tocá el botón <strong>Compartir</strong> <Share className="w-3.5 h-3.5 inline text-sky-600 mx-0.5" /> en la barra inferior de Safari.
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        2
-                      </span>
-                      <div>
-                        Deslizá hacia abajo y seleccioná <strong>"Agregar a inicio"</strong> <PlusSquare className="w-3.5 h-3.5 inline text-sky-600 mx-0.5" />.
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        3
-                      </span>
-                      <div>
-                        Presioná <strong>"Agregar"</strong> en la esquina superior derecha. ¡Listo! Ya tenés el ícono en tu pantalla.
-                      </div>
-                    </li>
-                  </ol>
+              {/* Troubleshooting download link */}
+              <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl space-y-1 text-xs">
+                <div className="font-bold text-sky-900 flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-sky-600 shrink-0" />
+                  <span>¿No comenzó la descarga en tu dispositivo?</span>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <p className="font-bold text-slate-900 text-sm">
-                    Pasos para Android o Computadora:
-                  </p>
-                  <ol className="space-y-2.5 text-slate-700 text-xs">
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        1
-                      </span>
-                      <div>
-                        En Chrome o tu navegador, tocá el menú de <strong>tres puntos (⋮)</strong> en la esquina superior.
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        2
-                      </span>
-                      <div>
-                        Elegí <strong>"Instalar aplicación"</strong> o <strong>"Agregar a la pantalla principal"</strong>.
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                      <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
-                        3
-                      </span>
-                      <div>
-                        Confirmá la instalación para disfrutar de pantalla completa y alertas en tiempo real.
-                      </div>
-                    </li>
-                  </ol>
-
-                  {isInstallable && (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        await install();
-                        setShowGuideModal(false);
-                      }}
-                      className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Lanzar Instalador Directo Ahora</span>
-                    </button>
-                  )}
-                </div>
-              )}
+                <p className="text-sky-800">
+                  Hacé{' '}
+                  <a
+                    href={apkDownloadUrl}
+                    download={apkFileName}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold underline text-emerald-700 hover:text-emerald-800"
+                  >
+                    clic aquí para forzar la descarga directa del APK
+                  </a>
+                  {' '}o{' '}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.open(apkDownloadUrl, '_blank');
+                    }}
+                    className="font-bold underline text-sky-700 hover:text-sky-900 cursor-pointer"
+                  >
+                    abrir en una pestaña nueva
+                  </button>.
+                </p>
+              </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setShowGuideModal(false)}
-                className="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 font-bold text-xs text-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setShowDownloadAlert(false);
+                  setShowModal(true);
+                }}
+                className="text-xs font-bold text-sky-700 hover:underline cursor-pointer"
+              >
+                Ver más opciones y ayuda
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowDownloadAlert(false)}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-bold text-xs text-white transition-colors cursor-pointer shadow-xs"
               >
                 Entendido
               </button>
@@ -218,6 +242,15 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
           </div>
         </div>
       )}
+
+      {/* Full Multi-device Assistance Modal */}
+      <DownloadApkModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        isInstallable={isInstallable}
+        onTriggerInstall={install}
+        isIOS={isIOS}
+      />
     </>
   );
 };

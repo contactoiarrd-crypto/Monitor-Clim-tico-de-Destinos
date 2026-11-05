@@ -531,16 +531,6 @@ export default function App() {
               {/* Botón Descargar App en Navbar */}
               <PWAInstallButton variant="navbar" />
 
-              {/* Botón Integrar en Web */}
-              <button
-                onClick={() => setIsEmbedModalOpen(true)}
-                className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-xs transition-all cursor-pointer shadow-2xs"
-                title="Generar código para insertar en alertatemprana.online"
-              >
-                <Code className="w-3.5 h-3.5 text-sky-600" />
-                <span>Integrar en mi Web</span>
-              </button>
-
               {/* Botón Exportar PDF */}
               {currentResult && (
                 <button

@@ -1,17 +1,18 @@
 {
-  "background_color": "#107652",
+  "background_color": "#0369a1",
   "description": "Monitor en tiempo real de alertas tempranas, riesgo de incendios y cruce de impacto estacional de El Niño (NOAA) en destinos turísticos. Integrado con alertatemprana.online.",
   "dir": "auto",
   "display": "standalone",
-  "name": "Monitor Climatico de Destinos",
-  "orientation": "any",
+  "name": "Monitor Climático de Destinos - IIARRD",
+  "orientation": "portrait-primary",
   "scope": "./",
-  "short_name": "Monitor de Destinos",
+  "short_name": "MonitorClima",
   "start_url": "./",
-  "theme_color": "#0a0b71",
-  "id": "Monitor",
+  "theme_color": "#0369a1",
+  "id": "monitor-clima-iiarrd",
   "categories": [
-    "weather"
+    "weather",
+    "travel"
   ],
   "lang": "es",
   "icons": [
@@ -22,8 +23,8 @@
       "purpose": "any"
     },
     {
-      "src": "android/launchericon-192x192.png",
-      "sizes": "192x192",
+      "src": "pwa-maskable-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
@@ -34,10 +35,28 @@
       "purpose": "any"
     },
     {
-      "src": "android/launchericon-512x512.png",
-      "sizes": "512x512",
+      "src": "android/launchericon-144x144.png",
+      "sizes": "144x144",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "android/launchericon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "android/launchericon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "android/launchericon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

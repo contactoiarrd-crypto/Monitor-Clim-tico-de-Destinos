@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
 import {defineConfig} from 'vite';
 import {VitePWA} from 'vite-plugin-pwa';
 
@@ -10,6 +11,29 @@ export default defineConfig(() => {
     plugins: [
       react(),
       tailwindcss(),
+      {
+        name: 'serve-apk',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.includes('.apk')) {
+              const cleanUrl = req.url.split('?')[0].replace(/^\//, '');
+              const candidatePaths = [
+                path.resolve('public', cleanUrl),
+                path.resolve('public/downloads', path.basename(cleanUrl)),
+                path.resolve('public', path.basename(cleanUrl))
+              ];
+              for (const p of candidatePaths) {
+                if (fs.existsSync(p)) {
+                  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+                  res.setHeader('Content-Disposition', 'attachment; filename="MonitorClimatico-IIARRD.apk"');
+                  return fs.createReadStream(p).pipe(res);
+                }
+              }
+            }
+            next();
+          });
+        }
+      },
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: [
@@ -17,6 +41,10 @@ export default defineConfig(() => {
           'apple-touch-icon.png',
           'icon.svg',
           'icon-maskable.svg',
+          'manifest.json',
+          'android/**/*',
+          'ios/**/*',
+          'windows/**/*',
           'assets/**/*'
         ],
         manifest: {
@@ -86,8 +114,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
       }),
     ],
@@ -97,8 +124,8 @@ export default defineConfig(() => {
       },
     },
     server: {
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      hmr: false,
+      watch: null,
     },
   };
 });
