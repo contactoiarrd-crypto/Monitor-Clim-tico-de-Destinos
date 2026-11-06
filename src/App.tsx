@@ -68,7 +68,6 @@ import { EmbedWidgetModal } from './components/EmbedWidgetModal';
 import { NotificationSettingsModal } from './components/NotificationSettingsModal';
 import { NotificationToastBanner } from './components/NotificationToastBanner';
 import { WatchDestinationButton } from './components/WatchDestinationButton';
-import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 
 type ViewMode = 'all' | 'tactical' | 'nino';
@@ -528,9 +527,6 @@ export default function App() {
                 )}
               </button>
 
-              {/* Botón Descargar App en Navbar */}
-              <PWAInstallButton variant="navbar" />
-
               {/* Botón Exportar PDF */}
               {currentResult && (
                 <button
@@ -550,13 +546,6 @@ export default function App() {
       {/* Main Content Area */}
       <main className={`max-w-6xl mx-auto px-4 py-6 md:py-8 flex-1 w-full space-y-6 md:space-y-8 ${urlEmbed ? 'p-2' : ''}`}>
         
-        {/* Banner de instalación PWA en dispositivos móviles */}
-        {!urlEmbed && (
-          <div className="max-w-3xl mx-auto">
-            <PWAInstallButton variant="banner" />
-          </div>
-        )}
-
         {/* Search Bar Container */}
         <div ref={searchContainerRef} className="max-w-3xl mx-auto relative">
           <form onSubmit={handleFormSubmit} className="relative flex items-center shadow-lg rounded-2xl">

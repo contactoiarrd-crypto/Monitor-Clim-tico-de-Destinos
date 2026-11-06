@@ -234,6 +234,32 @@ export function NotificationSettingsModal({
             )}
           </div>
 
+          {/* Alertas Push y Segundo Plano */}
+          <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-xs text-sky-950 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-sm text-sky-900">
+              <Sparkles className="w-4 h-4 text-sky-600" />
+              <span>¿Cómo funcionan las Alertas cuando la web no está abierta?</span>
+            </div>
+            <p className="leading-relaxed">
+              • <strong>Con la web abierta o minimizada:</strong> El monitor verifica el clima cada 5 minutos de forma automática y emite sonido y notificaciones emergentes en tu pantalla.
+            </p>
+            <p className="leading-relaxed">
+              • <strong>Con la web cerrada:</strong> El <em>Service Worker</em> registrado en tu navegador permanece activo en el sistema para recibir eventos de <strong>Web Push</strong> y sincronización periódica en Android y computadoras.
+            </p>
+            <div className="pt-1 flex items-center justify-between flex-wrap gap-2">
+              <span className="text-[11px] font-semibold text-sky-800">
+                Probá si tu dispositivo muestra las notificaciones del sistema:
+              </span>
+              <button
+                type="button"
+                onClick={handleTestNotification}
+                className="px-3 py-1.5 rounded-xl bg-sky-800 hover:bg-sky-900 text-white font-bold text-xs transition-colors cursor-pointer shadow-2xs"
+              >
+                {testSent ? '✓ Notificación Enviada' : 'Probar Notificación Ahora'}
+              </button>
+            </div>
+          </div>
+
           {/* Configuración de Alertas Tácticas */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">

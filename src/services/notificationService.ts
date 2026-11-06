@@ -201,24 +201,43 @@ export function getNotificationPermissionStatus(): NotificationPermission {
   return Notification.permission;
 }
 
-// Dispatch browser notification
-export function dispatchBrowserNotification(
+// Dispatch browser notification (uses ServiceWorkerRegistration on mobile and window.Notification on desktop)
+export async function dispatchBrowserNotification(
   title: string,
   message: string,
   destinationName: string
-): void {
+): Promise<void> {
   playAlertChime('warning');
 
-  if (isNotificationSupported() && Notification.permission === 'granted') {
+  if (!isNotificationSupported() || Notification.permission !== 'granted') {
+    return;
+  }
+
+  const notifOptions: NotificationOptions = {
+    body: message,
+    icon: '/android/launchericon-192x192.png',
+    badge: '/android/launchericon-96x96.png',
+    tag: `at-alert-${destinationName.toLowerCase()}-${Date.now()}`
+  };
+
+  // 1. Prefer ServiceWorkerRegistration on Android/Mobile
+  if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
     try {
-      new Notification(title, {
-        body: message,
-        icon: 'https://alertatemprana.online/favicon.ico',
-        tag: `at-alert-${destinationName.toLowerCase()}-${Date.now()}`
-      });
-    } catch (err) {
-      console.warn('Could not launch native Notification:', err);
+      const reg = await navigator.serviceWorker.ready;
+      if (reg && reg.showNotification) {
+        await reg.showNotification(title, notifOptions);
+        return;
+      }
+    } catch (e) {
+      console.warn('SW notification fallback to window Notification:', e);
     }
+  }
+
+  // 2. Desktop fallback
+  try {
+    new Notification(title, notifOptions);
+  } catch (err) {
+    console.warn('Could not launch window Notification:', err);
   }
 }
 

@@ -1,22 +1,26 @@
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-// Safe service worker registration (handles both dev and prod environments)
+
+// 1. Purge any stale legacy caches from older versions immediately
+if (typeof window !== 'undefined' && 'caches' in window) {
+  caches.keys().then((keys) => {
+    keys.forEach((key) => {
+      if (key !== 'monitor-clima-v5-network-first') {
+        caches.delete(key);
+      }
+    });
+  }).catch(() => {});
+}
+
+// 2. Register service worker with background push support and force update
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  import('virtual:pwa-register')
-    .then(({ registerSW }) => {
-      registerSW({
-        immediate: true,
-        onNeedRefresh() {
-          console.log('PWA: Actualización disponible.');
-        },
-        onOfflineReady() {
-          console.log('PWA: Aplicación lista para funcionar sin conexión.');
-        },
-      });
+  navigator.serviceWorker.register('./sw.js')
+    .then((reg) => {
+      reg.update().catch(() => {});
     })
-    .catch(() => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    .catch((err) => {
+      console.warn('SW register note:', err);
     });
 }
 
